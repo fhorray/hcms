@@ -1,0 +1,14 @@
+# Load .env.development* files when running `wrangler dev`
+NEXTJS_ENV=development
+
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
+
+CF_DATABASE_ID=example
+CF_ACCOUNT_ID=example
+CF_API_TOKEN=example
+CF_ACCESS_KEY=example
+CF_SECRET_ACCESS_KEY=example
+CF_ENDPOINT=example
+CF_R2_BUCKET=example
+
+CMS_TARGET=remote

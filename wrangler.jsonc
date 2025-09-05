@@ -17,7 +17,16 @@
 	},
 	"observability": {
 		"enabled": true
-	}
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "hcms",
+			"database_id": "ebe800c3-f658-4577-b19c-6d3a6fbe024d",
+			"migrations_dir": "./server/db/migrations",
+			"experimental_remote": true
+		}
+	]
 	/**
 	 * Smart Placement
 	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
