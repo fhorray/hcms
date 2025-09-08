@@ -5,8 +5,71 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1757104273576,
-      "tag": "0000_blue_tyger_tiger",
+      "when": 1757340564303,
+      "tag": "0000_yielding_strong_guy",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1757340601979,
+      "tag": "0001_zippy_rattler",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1757340605805,
+      "tag": "0002_narrow_dust",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1757340627077,
+      "tag": "0003_dry_monster_badoon",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1757340658603,
+      "tag": "0004_high_molly_hayes",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1757343459106,
+      "tag": "0005_milky_luke_cage",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1757353815280,
+      "tag": "0006_simple_roughhouse",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1757353829635,
+      "tag": "0007_classy_mister_sinister",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1757361701211,
+      "tag": "0008_early_black_tom",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1757367998766,
+      "tag": "0009_cuddly_nick_fury",
       "breakpoints": true
     }
   ]

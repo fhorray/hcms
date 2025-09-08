@@ -11,6 +11,7 @@
 		"nodejs_compat",
 		"global_fetch_strictly_public"
 	],
+	"account_id": "b9aac465aa71533a0342ac8da7f32813",
 	"assets": {
 		"binding": "ASSETS",
 		"directory": ".open-next/assets"
@@ -22,7 +23,7 @@
 		{
 			"binding": "DB",
 			"database_name": "hcms",
-			"database_id": "ebe800c3-f658-4577-b19c-6d3a6fbe024d",
+			"database_id": "825b25ae-1a9d-46e4-b4a7-269f3f41f39e",
 			"migrations_dir": "./server/db/migrations",
 			"experimental_remote": true
 		}

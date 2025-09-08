@@ -1,8 +1,22 @@
-import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
+import { sqliteTable, integer, text, real, index, uniqueIndex, primaryKey } from 'drizzle-orm/sqlite-core';
+import { createId } from '@paralleldrive/cuid2';
+import { sql } from 'drizzle-orm';
 
-export const posts = sqliteTable("posts", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  title: text("title").notNull(),
-  content: text("content"),
-  published: integer("published").default(0) // 0/1
+export const users = sqliteTable('users', {
+  id: text('id')
+        .primaryKey()
+        .$defaultFn(() => createId()),
+  email: text('email').notNull(),
+  name: text('name')
+}, (t) => [
+  index('users_email_idx').on(t.email),
+  uniqueIndex('users_email_uniq').on(t.email)
+]);
+
+export const tags = sqliteTable('tags', {
+  id: text('id')
+        .primaryKey()
+        .$defaultFn(() => createId()),
+  label: text('label', { enum: ["tech","news","sports"] })
 });
+

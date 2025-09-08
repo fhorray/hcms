@@ -1,0 +1,166 @@
+@layer components {
+  .prose {
+    @apply max-w-none text-foreground;
+
+    /* Placeholder do TipTap */
+    p.is-editor-empty:first-child::before,
+    p.is-empty::before {
+      @apply text-muted-foreground;
+      content: attr(data-placeholder);
+      float: left;
+      height: 0;
+      pointer-events: none;
+    }
+
+    /* Headings */
+    h1 {
+      @apply mt-6 mb-4 leading-tight font-semibold;
+    }
+
+    h2 {
+      @apply mt-6 mb-4 leading-tight font-semibold;
+    }
+
+    h3 {
+      @apply mt-6 mb-4 font-semibold;
+    }
+
+    /* Parágrafos */
+    p {
+      @apply mt-4 mb-4 leading-[1.6];
+    }
+
+    /* Links */
+    a {
+      @apply text-primary underline underline-offset-2 hover:text-primary/90;
+    }
+
+    /* Citações */
+    blockquote {
+      @apply border-l-4 border-border pl-4 italic ml-4 mr-4 mt-6 mb-6 text-muted-foreground;
+    }
+
+    /* Código inline */
+    code {
+      @apply bg-muted text-foreground/90 px-1 py-0.5 rounded-md text-sm font-mono;
+    }
+
+    /* Blocos de código */
+    pre {
+      @apply bg-muted text-foreground border border-border p-4 rounded-md overflow-auto mt-6 mb-6 font-mono;
+    }
+
+    pre code {
+      @apply bg-transparent p-0;
+    }
+
+    /* Listas */
+    ul {
+      @apply list-disc pl-6 mt-4 mb-4;
+    }
+
+    ol {
+      @apply list-decimal pl-6 mt-4 mb-4;
+    }
+
+    li {
+      @apply mt-2 mb-2;
+    }
+
+    li>ul,
+    li>ol {
+      @apply mt-2 mb-2;
+    }
+
+    /* Tabelas */
+    .tableWrapper {
+      @apply my-6 overflow-x-auto;
+    }
+
+    table {
+      @apply w-full table-fixed border-collapse overflow-hidden my-6;
+    }
+
+    thead {
+      @apply border-b-2 border-border;
+    }
+
+    th,
+    td {
+      @apply border border-border box-border min-w-[1em] px-2 py-1 align-top relative;
+    }
+
+    th {
+      @apply bg-muted text-left font-semibold;
+    }
+
+    td>*,
+    th>* {
+      @apply mb-0;
+    }
+
+    /* Célula selecionada (overlay) */
+    .selectedCell::after {
+      content: "";
+      @apply absolute inset-0 z-20 pointer-events-none bg-primary/10;
+    }
+
+    /* Alça de redimensionamento da coluna (TipTap) */
+    .tiptap.resize-cursor {
+      @apply cursor-col-resize;
+    }
+
+    .column-resize-handle {
+      @apply absolute right-[-2px] top-0 bottom-[-2px] w-1 bg-ring pointer-events-none;
+    }
+
+    /* Imagens */
+    img {
+      @apply max-w-full h-auto mt-4 mb-4 rounded-sm;
+    }
+  }
+
+  /**
+   * Prose “invertida”
+   * Use quando o container já tiver um fundo forte (ex.: badge/hero)
+   * Mantém tokens semânticos para continuar compatível com o tema.
+   */
+  .prose-invert {
+    @apply text-muted-foreground;
+
+    h1,
+    h2,
+    h3 {
+      @apply text-foreground;
+    }
+
+    a {
+      @apply text-accent underline underline-offset-2 hover:text-accent-foreground/90;
+    }
+
+    blockquote {
+      @apply border-l-border text-muted-foreground;
+    }
+
+    code {
+      @apply bg-secondary text-foreground/90;
+    }
+
+    pre {
+      @apply bg-secondary text-foreground border border-border;
+    }
+
+    thead {
+      @apply border-b border-border;
+    }
+
+    td {
+      @apply border-t border-border;
+    }
+
+    /* Emoji inline de exemplo, agora sem cor “crua” */
+    .emoji-inline {
+      @apply inline align-middle text-lg bg-accent px-1 rounded;
+    }
+  }
+}

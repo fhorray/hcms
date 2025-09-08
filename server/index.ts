@@ -1,31 +1,68 @@
+import collections from "@/cms/collections";
+import * as schema from "@/server/db/schema";
+import { eq } from "drizzle-orm";
 import { Hono } from "hono";
-import { drizzle } from "drizzle-orm/d1";
-import { posts } from "./db/schema";
-import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { getDb } from "./db";
 
 type Bindings = { DB: D1Database };
-const api = new Hono<{ Bindings: Bindings }>().basePath('/api');;
+const api = new Hono<{ Bindings: Bindings }>().basePath('/api');
 
-api.get("/posts", async (c) => {
-  const db = drizzle(getCloudflareContext().env.DB);
-  const all = await db.select().from(posts).all();
-  return c.json(all);
-});
+// CRUD ROUTES
+for (const [key, col] of Object.entries(schema)) {
+  // GET /api/<collection>
+  api.get(`/${key}`, async (c) => {
+    const db = getDb()
+    const all = await db.select().from(col).all();
+    return c.json(all);
+  });
+
+  // POST /api/<collection>
+  api.post(`/${key}`, async (c) => {
+    const db = getDb()
+    const data = await c.req.json();
+    const res = await db.insert(col).values(data).returning().get();
+    return c.json(res);
+  });
+
+  // GET /api/<collection>/:id
+  api.get(`/${key}/:id`, async (c) => {
+    const db = getDb()
+    const { id } = c.req.param();
+    const item = await db.select().from(col).where(eq(col.id, id)).get();
+    if (!item) return c.json({ error: 'Not found' }, 404);
+    return c.json(item);
+  });
+
+  // PUT /api/<collection>/:id
+  api.put(`/${key}/:id`, async (c) => {
+    const db = getDb()
+    const { id } = c.req.param();
+    const data = await c.req.json();
+    const res = await db.update(col).set(data).where(eq(col.id, id)).returning().get();
+    if (!res) return c.json({ error: 'Not found' }, 404);
+    return c.json(res);
+  });
+
+  // DELETE /api/<collection>/:id
+  api.delete(`/${key}/:id`, async (c) => {
+    const db = getDb()
+    const { id } = c.req.param();
+    const res = await db.delete(col).where(eq(col.id, id)).returning().get();
+    if (!res) return c.json({ error: 'Not found' }, 404);
+    return c.json(res);
+  });
+}
 
 api.get("/_schema/:resource", (c) => {
   const name = c.req.param("resource");
-  console.log(name)
-  // encontre no array e retorne fields
-  // (em prod, valide, cacheie, etc.)
-  // ...
-  return c.json({ name });
-});
 
-api.post("/posts", async (c) => {
-  const body = await c.req.json<{ title: string; content?: string }>();
-  const db = drizzle(c.env.DB);
-  await db.insert(posts).values({ title: body.title, content: body.content }).run();
-  return c.json({ ok: true });
+  if (!(schema as any)[name]) {
+    return c.json({ error: 'Not found' }, 404);
+  }
+  const data = collections.collections.find((f) => f.name.toLowerCase() === name.toLowerCase())
+
+  return c.json({ ...data });
+
 });
 
 
