@@ -1,22 +1,36 @@
+'use client';
+
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-
 import { FieldError } from '../error';
 import { LabelArea } from '../label';
 import { FieldWrapper } from '../wrapper';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import {
-  useFieldContext,
-  useFormContext,
-} from '@/components/form/form-context';
+import { useFieldContext } from '@/components/form/form-context';
 
 interface InputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
+  extends Omit<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    'type' | 'value' | 'defaultValue' | 'onChange'
+  > {
   label?: string;
   id: string;
   description?: string;
   showMinMax?: boolean;
+  /** valor inicial, se o form ainda não tiver valor */
+  defaultValue?: number;
+}
+
+function toNum(v: unknown, fallback: number): number {
+  const n = typeof v === 'number' ? v : Number(v);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function clamp(n: number, min: number, max: number) {
+  if (n < min) return min;
+  if (n > max) return max;
+  return n;
 }
 
 const NumberField = ({
@@ -27,37 +41,98 @@ const NumberField = ({
   max = 100,
   step = 1,
   showMinMax = true,
+  defaultValue,
   ...props
 }: InputProps) => {
+  // O campo É number:
   const field = useFieldContext<number>();
 
-  const [value, setValue] = useState(0);
+  // Coerções numéricas locais (min/max/step podem vir como string pelo HTML)
+  const minN = useMemo(() => toNum(min, 0), [min]);
+  const maxN = useMemo(() => toNum(max, 100), [max]);
+  const stepN = useMemo(() => Math.max(toNum(step, 1), 0.000001), [step]); // evita step 0
+
+  // Estado visual controlado por número
+  const [value, setValue] = useState<number>(() => {
+    // 1) prioriza valor do form
+    if (
+      typeof field.state.value === 'number' &&
+      Number.isFinite(field.state.value)
+    ) {
+      return clamp(field.state.value, minN, maxN);
+    }
+    // 2) senão usa defaultValue
+    const initial = toNum(defaultValue, minN);
+    return clamp(initial, minN, maxN);
+  });
+
+  // Se o valor do form mudar externamente, sincroniza o input
+  useEffect(() => {
+    const v = field.state.value;
+    if (typeof v === 'number' && Number.isFinite(v)) {
+      setValue(clamp(v, minN, maxN));
+    }
+  }, [field.state.value, minN, maxN]);
+
+  // Garante que o form tenha um número inicial se ainda não tiver
+  useEffect(() => {
+    if (
+      !(
+        typeof field.state.value === 'number' &&
+        Number.isFinite(field.state.value)
+      )
+    ) {
+      field.setValue(value); // number garantido
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // apenas na montagem
+
   const [isFocused, setIsFocused] = useState(false);
 
-  const percentage =
-    ((value - Number(min)) / (Number(max) - Number(min))) * 100;
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = Number.parseFloat(e.target.value);
-    if (
-      !Number.isNaN(newValue) &&
-      newValue >= Number(min) &&
-      newValue <= Number(max)
-    ) {
-      setValue(newValue);
-      field.setValue(newValue); // <-- usar o novo valor
+    // valueAsNumber já entrega number (ou NaN) para <input type="number">
+    const raw = e.currentTarget.valueAsNumber;
+    if (Number.isNaN(raw)) {
+      // Não alteramos o form enquanto o valor não é numérico;
+      // mantemos o último number válido no input.
+      return;
     }
+    const next = clamp(raw, minN, maxN);
+    setValue(next);
+    field.setValue(next); // ← sempre number
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    // clamp final ao sair do campo, caso o usuário tenha digitado fora dos limites
+    const n = e.currentTarget.valueAsNumber;
+    if (!Number.isNaN(n)) {
+      const next = clamp(n, minN, maxN);
+      setValue(next);
+      field.setValue(next);
+    } else {
+      // se ficar NaN (campo apagado), volta pro último válido
+      field.setValue(value);
+    }
+    setIsFocused(false);
   };
 
   const incrementValue = () => {
-    const newValue = Math.min(value + Number(step), Number(max));
-    setValue(newValue);
+    const next = clamp(value + stepN, minN, maxN);
+    setValue(next);
+    field.setValue(next); // ← sempre number
   };
 
   const decrementValue = () => {
-    const newValue = Math.max(value - Number(step), Number(min));
-    setValue(newValue);
+    const next = clamp(value - stepN, minN, maxN);
+    setValue(next);
+    field.setValue(next); // ← sempre number
   };
+
+  const percentage = useMemo(() => {
+    const range = maxN - minN;
+    if (range <= 0) return 0; // evita divisão por 0
+    return ((value - minN) / range) * 100;
+  }, [value, minN, maxN]);
 
   return (
     <FieldWrapper>
@@ -84,14 +159,15 @@ const NumberField = ({
 
         <Input
           id={id}
-          type={'number'}
-          value={value}
+          type="number"
+          value={Number.isFinite(value) ? value : ''} // sempre controlado por number
           onChange={handleChange}
           onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          min={min}
-          max={max}
-          step={step}
+          onBlur={handleBlur}
+          min={minN}
+          max={maxN}
+          step={stepN}
+          inputMode="decimal"
           style={{
             appearance: 'textfield',
             MozAppearance: 'textfield',
@@ -123,8 +199,8 @@ const NumberField = ({
             />
           </div>
           <div className="mt-1 flex justify-between text-xs text-zinc-400 dark:text-zinc-500">
-            <span>{min}</span>
-            <span>{max}</span>
+            <span>{minN}</span>
+            <span>{maxN}</span>
           </div>
         </>
       )}

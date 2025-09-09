@@ -7,6 +7,7 @@ export const { fieldContext, useFieldContext, formContext, useFormContext } =
 
 // Actions
 import { SubmitButton } from '@/components/form/inputs/actions/submit';
+import NumberField from '@/components/form/inputs/numeric/number-input';
 
 const InputField = lazy(
   () => import('@/components/form/inputs/text/text-input'),
@@ -61,6 +62,9 @@ const CEPField = lazy(
 const CPFField = lazy(
   () => import('@/components/form/inputs/specialized/cpf-input'),
 );
+const DateField = lazy(
+  () => import('@/components/form/inputs/specialized/date-input'),
+);
 
 // COMPLEX / STRUCTURED
 const KeyValuePairEditorField = lazy(
@@ -75,6 +79,7 @@ export const { useAppForm, withForm } = createFormHook({
   formContext,
   fieldComponents: {
     InputField,
+    NumberField,
     PasswordField,
     SearchField,
 
@@ -92,6 +97,7 @@ export const { useAppForm, withForm } = createFormHook({
 
     CEPField,
     CPFField,
+    DateField,
 
     KeyValuePairEditorField,
     JsonInputComponent,

@@ -1,18 +1,18 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "d67e7dcc-f629-4b80-991c-54d8f563df70",
+  "id": "ef49307d-b74a-4480-a482-a4bc697c8b00",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "posts": {
-      "name": "posts",
+    "products": {
+      "name": "products",
       "columns": {
         "id": {
           "name": "id",
-          "type": "integer",
+          "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "autoincrement": true
+          "autoincrement": false
         },
         "title": {
           "name": "title",
@@ -21,52 +21,87 @@
           "notNull": true,
           "autoincrement": false
         },
-        "content": {
-          "name": "content",
+        "price": {
+          "name": "price",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "inStock": {
+          "name": "inStock",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": true
+        },
+        "tags": {
+          "name": "tags",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "published": {
-          "name": "published",
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "releaseDate": {
+          "name": "releaseDate",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false,
-          "default": 0
+          "autoincrement": false
         },
-        "authorId": {
-          "name": "authorId",
-          "type": "integer",
+        "userId": {
+          "name": "userId",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         }
       },
       "indexes": {
-        "posts_authorId_idx": {
-          "name": "posts_authorId_idx",
+        "products_userId_idx": {
+          "name": "products_userId_idx",
           "columns": [
-            "authorId"
+            "userId"
           ],
           "isUnique": false
         },
-        "posts_title_idx": {
-          "name": "posts_title_idx",
+        "products_title_idx": {
+          "name": "products_title_idx",
           "columns": [
             "title"
+          ],
+          "isUnique": false
+        },
+        "products_price_idx": {
+          "name": "products_price_idx",
+          "columns": [
+            "price"
+          ],
+          "isUnique": false
+        },
+        "products_inStock_idx": {
+          "name": "products_inStock_idx",
+          "columns": [
+            "inStock"
           ],
           "isUnique": false
         }
       },
       "foreignKeys": {
-        "posts_authorId_users_id_fk": {
-          "name": "posts_authorId_users_id_fk",
-          "tableFrom": "posts",
+        "products_userId_users_id_fk": {
+          "name": "products_userId_users_id_fk",
+          "tableFrom": "products",
           "tableTo": "users",
           "columnsFrom": [
-            "authorId"
+            "userId"
           ],
           "columnsTo": [
             "id"
@@ -79,74 +114,15 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "posts_tags": {
-      "name": "posts_tags",
-      "columns": {
-        "posts_id": {
-          "name": "posts_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "tags_id": {
-          "name": "tags_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "posts_tags_posts_id_posts_id_fk": {
-          "name": "posts_tags_posts_id_posts_id_fk",
-          "tableFrom": "posts_tags",
-          "tableTo": "posts",
-          "columnsFrom": [
-            "posts_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "posts_tags_tags_id_tags_id_fk": {
-          "name": "posts_tags_tags_id_tags_id_fk",
-          "tableFrom": "posts_tags",
-          "tableTo": "tags",
-          "columnsFrom": [
-            "tags_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "posts_tags_posts_id_tags_id_pk": {
-          "columns": [
-            "posts_id",
-            "tags_id"
-          ],
-          "name": "posts_tags_posts_id_tags_id_pk"
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
     "tags": {
       "name": "tags",
       "columns": {
         "id": {
           "name": "id",
-          "type": "integer",
+          "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "autoincrement": true
+          "autoincrement": false
         },
         "label": {
           "name": "label",
@@ -167,10 +143,10 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "integer",
+          "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "autoincrement": true
+          "autoincrement": false
         },
         "email": {
           "name": "email",

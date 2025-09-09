@@ -21,20 +21,21 @@ export default {
         }
       }
     },
-    { name: "Tags", fields: { label: { enum: ["tech", "news", "sports"], required: true, indexed: true } } },
+    { name: "Tags", fields: { label: { enum: ["tech", "news", "sports", "others"], required: true, indexed: true } } },
 
     // JSON Schema Example
     {
       name: "Products",
       icon: ShoppingCartIcon,
       fields: {
-        title: { type: "text", required: true, indexed: true },
-        price: { type: "float", required: true, indexed: true },
-        inStock: { type: "boolean", default: true, indexed: true },
+        title: { type: "textarea", required: true, indexed: true },
+        price: { type: "number", required: true, indexed: true },
+        inStock: { type: "switcher", default: true, indexed: true },
         tags: { type: "json" },
-        description: { type: "richtext" },
+        description: { type: "rich-text" },
         releaseDate: { type: "date" },
-        // category: { relation: { to: "users" }, required: true, indexed: true },
+        // user: { relationship: { to: "users" }, required: true, indexed: true },
+        // category: { relationship: { to: "" }, required: true, indexed: true },
       }
     }
   ],

@@ -3,12 +3,9 @@ NEXTJS_ENV=development
 
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
 
-CF_DATABASE_ID=example
-CF_ACCOUNT_ID=example
-CF_API_TOKEN=example
-CF_ACCESS_KEY=example
-CF_SECRET_ACCESS_KEY=example
-CF_ENDPOINT=example
-CF_R2_BUCKET=example
+CLOUDFLARE_DATABASE_ID=db_id
+CLOUDFLARE_ACCOUNT_ID=account_id
+CLOUDFLARE_TOKEN=cloudflare_token
 
 CMS_TARGET=remote
+CMS_DB=sqlite

@@ -25,6 +25,7 @@ export default
       dbCredentials: {
         url: process.env.CMS_DATABASE_URL!
       },
-      verbose: true
+      verbose: true,
+      strict: false,
     })
   ;

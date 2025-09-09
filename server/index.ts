@@ -20,7 +20,14 @@ for (const [key, col] of Object.entries(schema)) {
   api.post(`/${key}`, async (c) => {
     const db = getDb()
     const data = await c.req.json();
-    const res = await db.insert(col).values(data).returning().get();
+    console.log(data)
+    // verify if any field from data is a json object and convert to string
+    for (const [k, v] of Object.entries(data)) {
+      if (v && typeof v === 'object') {
+        data[k] = JSON.stringify(v);
+      }
+    }
+    const [res] = await db.insert(col).values(data).returning();
     return c.json(res);
   });
 
@@ -38,7 +45,7 @@ for (const [key, col] of Object.entries(schema)) {
     const db = getDb()
     const { id } = c.req.param();
     const data = await c.req.json();
-    const res = await db.update(col).set(data).where(eq(col.id, id)).returning().get();
+    const [res] = await db.update(col).set(data).where(eq(col.id, id)).returning();
     if (!res) return c.json({ error: 'Not found' }, 404);
     return c.json(res);
   });
@@ -47,7 +54,7 @@ for (const [key, col] of Object.entries(schema)) {
   api.delete(`/${key}/:id`, async (c) => {
     const db = getDb()
     const { id } = c.req.param();
-    const res = await db.delete(col).where(eq(col.id, id)).returning().get();
+    const [res] = await db.delete(col).where(eq(col.id, id)).returning();
     if (!res) return c.json({ error: 'Not found' }, 404);
     return c.json(res);
   });

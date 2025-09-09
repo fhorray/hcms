@@ -7,7 +7,7 @@ export default function Home() {
     <div className="flex min-h-screen items-center justify-center bg-background">
       <div className="text-center space-y-6">
         <div className="space-y-2">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-cms-accent-blue to-cms-accent-purple bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-700 bg-clip-text text-transparent">
             CMS Headless
           </h1>
           <p className="text-xl text-muted-foreground">

@@ -3,13 +3,30 @@ import * as schema from "@/server/db/schema"
 
 // Entrada mais amigável (opções só quando quiser)
 export type FieldTypeInput =
-  | 'text' | 'boolean' | 'int' | 'float' | 'json' | 'date' | 'datetime' | "richtext"
-  | 'email' | 'password' | 'url' | 'uuid' | 'cuid' | 'autoincrement' | 'timestamp'
-  | 'textarea' | 'markdown'
-  | 'image' | 'file'
+  | 'array'
+  | 'blocks'
+  | 'checkbox'
+  | 'switcher'
+  | 'json'
+  | 'code'
+  | 'collapsible'
+  | 'date'
+  | 'email'
+  | 'group'
+  | 'number'
+  | 'point'
+  | 'radio-group'
+  | 'rich-text'
+  | 'join'
+  | 'row'
   | 'select'
+  | 'tabs'
+  | 'text'
+  | 'textarea'
+  | 'ui'
+  | 'upload'
   | { enum: string[] }
-  | { relation: { to: keyof typeof schema; many?: boolean; /* through?: string (opcional) */ } };
+  | { relationship: { to: keyof typeof schema; many?: boolean; through?: string } };
 
 export type FieldDefInput = {
   type: FieldTypeInput;
