@@ -1,8 +1,5 @@
 'use client';
 
-import { zod } from '@/cms/helpers/drizzle';
-import type { Tables, Select } from '@/cms/helpers/drizzle';
-
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -109,24 +106,12 @@ function ColumnFilter({ allColumns }: { allColumns: string[] }) {
 // ---------------------------------------------
 //  Main component
 // ---------------------------------------------
-type Props<K extends Tables> = {
-  items: Select<K>[];
-};
 
-export function CollectionItemsList<K extends Tables>({
-  // collection,
-  items,
-}: Props<K>) {
+export function CollectionItemsList({ items }: { items: any[] | null }) {
   const params = useParams();
   const slug = params.collection;
 
   const { viewMode, visibleColumns } = useStore($tableFilters);
-
-  // Schemas (caso queira validar/formatar em algum momento)
-  const selectSchema = zod.select[slug as K];
-  const insertSchema = zod.insert[slug as K];
-  void selectSchema; // evitar TS unused caso não use agora
-  void insertSchema;
 
   // Lista de colunas: união das chaves de todos os itens
   const allColumns = useMemo(() => {
@@ -195,7 +180,7 @@ export function CollectionItemsList<K extends Tables>({
           </div>
         )}
 
-        {items?.length > 0 && viewMode === 'list' && (
+        {(items?.length as number) > 0 && viewMode === 'list' && (
           <div className="rounded-md border">
             <Table>
               <TableHeader>
@@ -210,7 +195,7 @@ export function CollectionItemsList<K extends Tables>({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {items.map((item, index) => (
+                {items?.map((item, index) => (
                   <TableRow key={index} className="hover:bg-muted/50">
                     {renderedColumns.map((key) => {
                       const value = (item as any)[key];
@@ -261,9 +246,9 @@ export function CollectionItemsList<K extends Tables>({
           </div>
         )}
 
-        {items?.length > 0 && viewMode === 'grid' && (
+        {(items?.length as number) > 0 && viewMode === 'grid' && (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {items.map((item, index) => (
+            {items?.map((item, index) => (
               <Card key={index} className="hover:shadow-md transition-shadow">
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">

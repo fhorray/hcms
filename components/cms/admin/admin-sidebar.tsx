@@ -1,6 +1,5 @@
 'use client';
 
-import collections from '@/cms/collections';
 import {
   Sidebar,
   SidebarContent,
@@ -14,6 +13,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
+import { useOpaca } from '@/new-cms/hooks/use-opaca';
 import {
   BarChart3,
   Database,
@@ -48,6 +48,7 @@ const getCollectionIcon = (
 export function AdminSidebar({}: AdminSidebarProps) {
   const { state } = useSidebar();
   const pathname = usePathname();
+  const { collectionsList } = useOpaca();
   const collapsed = state === 'collapsed';
 
   const isCollectionActive = (slug: string) =>
@@ -113,20 +114,20 @@ export function AdminSidebar({}: AdminSidebarProps) {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="flex flex-col gap-4">
-              {collections.collections.map((collection) => {
+              {(collectionsList ?? [])?.map((c) => {
                 const slug =
-                  collection.name.toLowerCase() ||
-                  collection.name.toLowerCase().replace(/\s+/g, '-');
-                const Icon = collection.icon || DatabaseIcon;
+                  c.tableName?.toLowerCase() ||
+                  c.tableName?.toLowerCase().replace(/\s+/g, '-');
+                const Icon = DatabaseIcon;
 
                 return (
-                  <SidebarMenuItem key={collection.name}>
+                  <SidebarMenuItem key={c.tableName}>
                     <SidebarMenuButton asChild>
                       <Link
                         href={`/admin/${slug}`}
                         className={cn(
                           'flex items-center gap-3 rounded-lg transition-colors text-sm',
-                          isCollectionActive(slug)
+                          isCollectionActive(slug as string)
                             ? 'bg-primary text-primary-foreground'
                             : 'text-sidebar-foreground hover:bg-sidebar-accent',
                         )}
@@ -135,10 +136,12 @@ export function AdminSidebar({}: AdminSidebarProps) {
                         {!collapsed && (
                           <div className="flex items-center gap-2 text-left">
                             <span className="block font-medium">
-                              {collection.name}
+                              {/* First letter uppercase */}
+                              {(c.tableName ?? '').charAt(0).toUpperCase() +
+                                (c.tableName ?? '').slice(1)}
                             </span>
                             <span className="text-xs opacity-70">
-                              ({Object.keys(collection.fields).length} fields)
+                              ({Object.keys(c.fields).length} fields)
                             </span>
                           </div>
                         )}

@@ -1,21 +1,12 @@
-import * as schema from "@/server/db/schema";
-import { eq } from "drizzle-orm";
+import { router } from "@/cms";
 import { Hono } from "hono";
-import { getDb } from "./db";
-import { createHonoCrudRouter } from "@/cms/server";
-import { cmsConfig } from "@/cms/schema";
+
 
 type Bindings = { DB: D1Database };
 const api = new Hono<{ Bindings: Bindings }>().basePath('/api');
 
-
-const honoCrud = createHonoCrudRouter({
-  getDb,
-  schema: schema,
-  cms: cmsConfig,
-})
-
-api.route("/", honoCrud)
+// Dynamic Router
+api.route("/", router)
 
 // CRUD ROUTES
 // for (const [key, col] of Object.entries(schema)) {

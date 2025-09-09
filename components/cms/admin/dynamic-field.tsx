@@ -1,8 +1,9 @@
 'use client';
 
-import collections from '@/cms/collections';
 import { withForm } from '@/components/form/form-context';
 import type { FieldDefInput, FieldTypeInput } from '@/cms/types';
+import { ColumnMeta, TableCmsSchemaTyped } from '@/cms/builders';
+import { Collection } from '@/new-cms/config/types';
 
 type NormalizedField =
   | {
@@ -107,9 +108,7 @@ const canonPrimitive = (
   return 'text';
 };
 
-function normalizeFieldDef(
-  input: FieldDefInput | FieldTypeInput,
-): NormalizedField {
+function normalizeFieldDef(input: ColumnMeta): NormalizedField {
   // string direta ('Text', 'RichText', etc.)
   if (typeof input === 'string') {
     return { kind: 'primitive', type: input };
@@ -155,20 +154,20 @@ function normalizeFieldDef(
 
 interface DynamicFieldProps {
   name: string;
-  field: FieldDefInput | FieldTypeInput;
+  field: Collection['fields'][number];
   label?: string;
   description?: string;
 }
 
 export const DynamicField = withForm({
   props: {} as DynamicFieldProps,
-  defaultValues: {},
+  defaultValues: {} as Partial<Collection>,
   render: ({ form, name, field, description, label }) => {
     const info = normalizeFieldDef(field);
     const renderLabel = label ?? name.charAt(0).toUpperCase() + name.slice(1);
 
     return (
-      <form.AppField name={name}>
+      <form.AppField name={'fields'}>
         {(fieldForm) => {
           if (info.kind === 'primitive') {
             // converte os tipos estilo Payload para os tokens do seu switch antigo

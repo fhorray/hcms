@@ -13,7 +13,7 @@ export const users = sqliteTable('users', {
 
 export const tags = sqliteTable('tags', {
   id: text('id').primaryKey().notNull().$defaultFn(() => init({ length: 10 })()),
-  label: text('label', { enum: ["tech","news","sports","others"] })
+  label: text('label', { enum: ["tech", "news", "sports", "others"] })
 });
 
 export const products = sqliteTable('products', {

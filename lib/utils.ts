@@ -12,3 +12,5 @@ export const slugify = (s: string) =>
     .replace(/[^a-z0-9_]/g, '')
     .replace(/^_+|_+$/g, '');
 
+export const humanize = (s: string) =>
+  s.trim().replace(/([a-z])([A-Z])/g, "$1 $2")

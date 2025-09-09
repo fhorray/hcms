@@ -1,5 +1,17 @@
-import collections from '@/cms/collections';
-import { CollectionInput } from '@/cms/types';
+import {
+  Calendar as CalendarIcon,
+  Hash as NumberIcon,
+  ToggleLeft as BooleanIcon,
+  Type as StringIcon,
+  List as EnumIcon,
+  Braces as JsonIcon,
+  File as BlobIcon,
+  HelpCircle as UnknownIcon,
+  Key as PrimaryKeyIcon,
+  Database as DatabaseIcon,
+  DatabaseZap as DatabaseZapIcon,
+} from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,87 +22,44 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import {
-  CalendarIcon,
-  DatabaseIcon,
-  DatabaseZapIcon,
-  FileTextIcon,
-  HashIcon,
-  LinkIcon,
-  ListIcon,
-  ToggleLeftIcon,
-  TypeIcon,
-} from 'lucide-react';
-import React from 'react';
 
-const getFieldIcon = (fieldType: string) => {
-  const icons: Record<string, any> = {
-    text: TypeIcon,
-    int: HashIcon,
-    float: HashIcon,
-    boolean: ToggleLeftIcon,
-    date: CalendarIcon,
-    datetime: CalendarIcon,
-    json: FileTextIcon,
-    enum: ListIcon,
-    relation: LinkIcon,
-  };
-  return icons[fieldType] || TypeIcon;
-};
+import type { TableCmsSchemaTyped, FieldKind } from '@/cms/builders';
+import { GetFielfKindIconRecord } from '@/cms/client/ui/records';
+import { Collection } from '@/new-cms/config/types';
 
-const getFieldTypeDisplay = (
-  field: any,
-): { type: string; details?: string } => {
-  if (typeof field === 'string') {
-    return { type: field };
-  }
-
-  if ('enum' in field) {
-    return { type: 'enum', details: `Options: ${field.enum.join(', ')}` };
-  }
-
-  if ('relation' in field) {
-    const many = field.relation.many ? ' (many)' : '';
-    return { type: 'relation', details: `→ ${field.relation.to}${many}` };
-  }
-
-  if (field.type) {
-    if (typeof field.type === 'string') {
-      return { type: field.type };
-    }
-
-    if ('enum' in field.type) {
-      return {
-        type: 'enum',
-        details: `Options: ${field.type.enum.join(', ')}`,
-      };
-    }
-
-    if ('relation' in field.type) {
-      const many = field.type.relation.many ? ' (many)' : '';
-      return {
-        type: 'relation',
-        details: `→ ${field.type.relation.to}${many}`,
-      };
-    }
-  }
-
-  return { type: 'complex' };
-};
-
-const getFieldBadgeColor = (type: string) => {
-  const colors: Record<string, string> = {
-    text: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
-    int: 'bg-green-500/10 text-green-400 border-green-500/30',
-    float: 'bg-green-500/10 text-green-400 border-green-500/30',
-    boolean: 'bg-purple-500/10 text-purple-400 border-purple-500/30',
-    date: 'bg-orange-500/10 text-orange-400 border-orange-500/30',
-    datetime: 'bg-orange-500/10 text-orange-400 border-orange-500/30',
-    json: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30',
-    enum: 'bg-pink-500/10 text-pink-400 border-pink-500/30',
-    relation: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30',
-  };
-  return colors[type] || 'bg-gray-500/10 text-gray-400 border-gray-500/30';
+const fieldUI: Record<FieldKind, { icon: React.ElementType; color: string }> = {
+  string: {
+    icon: StringIcon,
+    color: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
+  },
+  number: {
+    icon: NumberIcon,
+    color: 'bg-green-500/10 text-green-400 border-green-500/30',
+  },
+  boolean: {
+    icon: BooleanIcon,
+    color: 'bg-purple-500/10 text-purple-400 border-purple-500/30',
+  },
+  date: {
+    icon: CalendarIcon,
+    color: 'bg-orange-500/10 text-orange-400 border-orange-500/30',
+  },
+  enum: {
+    icon: EnumIcon,
+    color: 'bg-pink-500/10 text-pink-400 border-pink-500/30',
+  },
+  json: {
+    icon: JsonIcon,
+    color: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30',
+  },
+  blob: {
+    icon: BlobIcon,
+    color: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30',
+  },
+  unknown: {
+    icon: UnknownIcon,
+    color: 'bg-gray-500/10 text-gray-400 border-gray-500/30',
+  },
 };
 
 export const CollectionFieldsInfo = ({
@@ -98,14 +67,9 @@ export const CollectionFieldsInfo = ({
   collection,
 }: {
   children?: React.ReactNode;
-  collection: CollectionInput;
+  collection: Collection;
 }) => {
-  const fieldEntries = Object.entries(collection.fields);
-  const requiredFieldsCount = fieldEntries.filter(([_, field]) => {
-    if (typeof field === 'string') return false;
-    if ('enum' in field || 'relation' in field) return false;
-    return field.required === true;
-  }).length;
+  const fields = collection.fields;
 
   return (
     <Sheet>
@@ -118,88 +82,64 @@ export const CollectionFieldsInfo = ({
         )}
       </SheetTrigger>
 
-      <SheetContent className="!max-w-[40vw] space-y-4">
-        <SheetHeader>
+      <SheetContent className="!max-w-[30vw] space-y-4 px-4">
+        <SheetHeader className="px-0 pb-0">
           <SheetTitle className="flex items-center gap-2">
             <DatabaseIcon className="w-5 h-5" />
             Collection Fields
           </SheetTitle>
           <SheetDescription>
-            Field definitions and their configurations for the {collection.name}{' '}
-            collection data.
+            Field definitions and their configurations for the{' '}
+            <code>{collection.tableName}</code> collection.
           </SheetDescription>
         </SheetHeader>
+
         <div className="grid gap-4">
-          {fieldEntries.map(([fieldName, field]) => {
-            const { type, details } = getFieldTypeDisplay(field);
-            const FieldIcon = getFieldIcon(type);
-            const badgeColor = getFieldBadgeColor(type);
-
-            const isRequired =
-              typeof field !== 'string' &&
-              !('enum' in field) &&
-              !('relation' in field) &&
-              field.required === true;
-
-            const isUnique =
-              typeof field !== 'string' &&
-              !('enum' in field) &&
-              !('relation' in field) &&
-              field.unique === true;
-
-            const hasDefault =
-              typeof field !== 'string' &&
-              !('enum' in field) &&
-              !('relation' in field) &&
-              field.default !== undefined;
+          {fields.map((field) => {
+            const ui = fieldUI[field.kind] || fieldUI.unknown;
+            const Icon = GetFielfKindIconRecord[field.kind] || UnknownIcon;
 
             return (
               <div
-                key={fieldName}
+                key={field.name}
                 className="p-4 border border-border rounded-lg bg-cms-surface/30 hover:bg-cms-surface-hover/30 transition-colors"
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start gap-3 flex-1">
-                    <div className="w-8 h-8 bg-background/80 rounded-lg flex items-center justify-center">
-                      <FieldIcon className="w-4 h-4 text-primary" />
-                    </div>
-                    <div className="flex-1 space-y-2">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-lg">{fieldName}</h3>
-                        <Badge className={`text-xs ${badgeColor}`}>
-                          {type}
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-background/80 rounded-lg flex items-center justify-center">
+                    <Icon className="w-4 h-4 text-primary" />
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-semibold text-lg">{field.name}</h3>
+                      <Badge className={`text-xs ${ui.color}`}>
+                        {field.kind}
+                      </Badge>
+                      {field.isPrimaryKey && (
+                        <Badge
+                          variant="outline"
+                          className="text-xs flex items-center gap-1"
+                        >
+                          <PrimaryKeyIcon className="w-3 h-3" />
+                          PK
                         </Badge>
-                        {isRequired && (
-                          <Badge variant="destructive" className="text-xs">
-                            Required
-                          </Badge>
-                        )}
-                        {isUnique && (
-                          <Badge variant="outline" className="text-xs">
-                            Unique
-                          </Badge>
-                        )}
-                      </div>
-                      {details && (
-                        <p className="text-sm text-muted-foreground">
-                          {details}
-                        </p>
                       )}
-                      {hasDefault && (
-                        <p className="text-xs text-muted-foreground">
-                          Default:{' '}
-                          <code className="bg-muted px-1 py-0.5 rounded text-xs">
-                            {JSON.stringify(
-                              typeof field !== 'string' &&
-                                !('enum' in field) &&
-                                !('relation' in field)
-                                ? field.default
-                                : null,
-                            )}
-                          </code>
-                        </p>
+                      {!field.isNullable && (
+                        <Badge variant="destructive" className="text-xs">
+                          Required
+                        </Badge>
+                      )}
+                      {field.hasDefault && (
+                        <Badge variant="outline" className="text-xs">
+                          Default
+                        </Badge>
                       )}
                     </div>
+
+                    {field.enumValues && field.enumValues.length > 0 && (
+                      <p className="text-sm text-muted-foreground">
+                        Options: {field.enumValues.join(', ')}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>

@@ -10,28 +10,17 @@ import {
 } from '@/components/ui/card';
 import { ArrowLeft, Database, Link } from 'lucide-react';
 
-import collections from '@/cms/collections';
-import { Select, Tables } from '@/cms/helpers/drizzle';
-import { CollectionInput } from '@/cms/types';
 import { CollectionHeader } from '@/components/cms/admin/collection-header';
 import { CollectionItemsList } from '@/components/cms/admin/collection-items-list';
-import { useCollections } from '@/hooks/use-collections';
 import { useParams } from 'next/navigation';
+import { useOpaca } from '@/new-cms/hooks/use-opaca';
 
 export default function CollectionPage() {
   const { collection } = useParams();
 
-  const {
-    api: { list },
-  } = useCollections();
+  const { query, collection: collectionData } = useOpaca();
 
-  const collectionDbData = list.data;
-
-  // console.log({ collectionDbData });
-
-  const collectionData = collections.collections.find(
-    (c) => c.name.toLowerCase().replace(/\s+/g, '-') === collection,
-  ) as unknown as CollectionInput;
+  const items = query?.useList?.().data;
 
   if (!collectionData) {
     return (
@@ -69,7 +58,7 @@ export default function CollectionPage() {
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Total Items
             </CardTitle>
-            <div className="text-2xl font-bold">{collectionDbData?.length}</div>
+            <div className="text-2xl font-bold">{items?.length ?? 0}</div>
           </CardHeader>
         </Card>
 
@@ -86,15 +75,13 @@ export default function CollectionPage() {
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Primary Key
             </CardTitle>
-            <div className="text-2xl font-bold">
-              {collectionData.name || 'id'}
-            </div>
+            <div className="text-2xl font-bold">{'id'}</div>
           </CardHeader>
         </Card>
       </div>
 
       {/* Items */}
-      {collectionDbData?.length === 0 ? (
+      {items?.length === 0 ? (
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -104,7 +91,7 @@ export default function CollectionPage() {
                   Collection Items
                 </CardTitle>
                 <CardDescription>
-                  Sample data from the {collectionData.name} collection.
+                  Sample data from the {collectionData.tableName} collection.
                 </CardDescription>
               </div>
             </div>
@@ -116,9 +103,7 @@ export default function CollectionPage() {
           </CardContent>
         </Card>
       ) : (
-        <CollectionItemsList
-          items={collectionDbData as unknown as Select<Tables>[]}
-        />
+        <CollectionItemsList items={items ?? []} />
       )}
     </div>
   );

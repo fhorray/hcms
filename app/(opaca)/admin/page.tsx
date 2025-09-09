@@ -1,4 +1,6 @@
-import collections from '@/cms/collections';
+'use client';
+
+import { hcms } from '@/cms';
 import { CollectionInput } from '@/cms/types';
 import { CollectionCard } from '@/components/cms/admin/collection-card';
 import {
@@ -8,14 +10,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { useOpaca } from '@/new-cms/hooks/use-opaca';
 import { Database, FileText, Settings, TrendingUp } from 'lucide-react';
 
 export default function Dashboard() {
-  const totalCollections = collections.collections.length;
-  const totalFields = collections.collections.reduce(
-    (acc, collection) => acc + Object.keys(collection.fields).length,
-    0,
-  );
+  const { collectionsList, stats: statsData } = useOpaca();
+
+  const totalCollections = collectionsList?.length;
+  const totalFields = statsData?.totalCollections;
+
   const stats = [
     {
       title: 'Total Collections',
@@ -93,12 +96,8 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {collections.collections.map((collection) => (
-            // <div>{collection.name}</div>
-            <CollectionCard
-              key={collection.name}
-              collection={collection as unknown as CollectionInput}
-            />
+          {collectionsList?.map((c) => (
+            <CollectionCard key={c.tableName} collection={c} />
           ))}
         </div>
       </div>

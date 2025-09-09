@@ -1,11 +1,11 @@
 'use client';
 
-import { zod } from '@/cms/helpers/drizzle';
+import { ColumnMeta } from '@/cms/builders';
 import { DynamicField } from '@/components/cms/admin/dynamic-field';
 import { useAppForm } from '@/components/form/form-context';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useCollections } from '@/hooks/use-collections';
+import { useOpaca } from '@/new-cms/hooks/use-opaca';
 import { ArrowLeft, Save, XIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
@@ -18,10 +18,9 @@ export default function CollectionForm() {
     itemId,
     slug,
     query,
-    api: { create, update, item },
-  } = useCollections();
+  } = useOpaca();
 
-  const itemData = item(itemId as string, isEditing && !!itemId).data;
+  const itemData = query?.useGetOne?.(itemId as string).data;
 
   if (!collectionData) {
     return (
@@ -42,11 +41,7 @@ export default function CollectionForm() {
     );
   }
 
-  // Create dynamic schema based on collection fields
-  const createSchema =
-    zod.insert[collectionData.name as keyof typeof zod.insert];
-
-  type FormData = z.infer<typeof createSchema>;
+  type FormData = typeof collectionData;
 
   // Get default values
   const getDefaultValues = (): Partial<FormData> => {
@@ -57,6 +52,7 @@ export default function CollectionForm() {
         typeof field !== 'string' &&
         !('enum' in field) &&
         !('relation' in field) &&
+        'default' in field &&
         field.default !== undefined
       ) {
         defaults[fieldName] = field.default;
@@ -70,9 +66,9 @@ export default function CollectionForm() {
     defaultValues: getDefaultValues() ?? ({} as FormData),
     onSubmit: async ({ value }) => {
       if (isEditing && itemId) {
-        update.mutate({ id: itemId, data: value });
+        query.update?.mutate({ id: itemId, input: value });
       } else {
-        create.mutate(value);
+        query.create?.mutate(value);
       }
     },
   });
@@ -93,7 +89,7 @@ export default function CollectionForm() {
             <div>
               <h1 className="text-3xl font-bold">
                 {isEditing ? 'Edit' : 'Create'}{' '}
-                {collectionData?.name.slice(0, -1)}
+                {collectionData?.tableName?.slice(0, -1)}
               </h1>
               <p className="text-muted-foreground">
                 {isEditing
@@ -119,16 +115,17 @@ export default function CollectionForm() {
             className="space-y-6"
           >
             <div className="grid gap-6">
-              {Object.entries(collectionData?.fields).map(
-                ([fieldName, field]) => (
+              {Object.values(collectionData).map((c: any, i) => {
+                if (c.name === 'id') return null;
+                return (
                   <DynamicField
-                    key={fieldName}
-                    name={fieldName}
-                    field={field}
+                    key={i}
+                    name={c.name}
+                    field={c as ColumnMeta}
                     form={form}
                   />
-                ),
-              )}
+                );
+              })}
             </div>
 
             <div className="flex items-center justify-end gap-4 pt-6 border-t">
