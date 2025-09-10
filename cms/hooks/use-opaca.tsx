@@ -2,16 +2,17 @@
 
 import { slugify } from '@/lib/utils';
 import config from '@opaca-config';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import { OpacaCollection } from '../types';
 import * as schema from '../server/db/schema';
 
 export const useOpaca = () => {
-  const { collection: collectionSlug, action } = useParams<{
-    collection: string;
-    action?: string;
-  }>();
+  const qc = useQueryClient();
+
+  const { paths } = useParams() as { paths?: string[] };
+  const collectionSlug = paths?.[0] ?? '';
+  const action = paths?.[1]; // present for "/:collection/:id"
 
   const collection = {
     ...Object.values(config.collections).find(
@@ -34,6 +35,7 @@ export const useOpaca = () => {
         const res = await fetch(`/api/${collection.slug}`);
         return res.json();
       },
+      enabled: !!collection.slug,
     }),
 
     // GET SINGLE ITEM
@@ -48,48 +50,77 @@ export const useOpaca = () => {
     }),
 
     // CREATE ITEM
-    create: async (data: Record<string, any>) => {
-      const res = await fetch(`/api/${collection.slug}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-      return res.json();
-    },
+    create: useMutation({
+      mutationFn: async (data: Record<string, any>) => {
+        const res = await fetch(`/api/${collection.slug}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        return res.json();
+      },
+      onSuccess: () => {
+        // invalidate list so UI refetches automatically
+        qc.invalidateQueries({ queryKey: ['opaca', 'list', collection.slug] });
+      },
+    }),
 
     // UPDATE ITEM
-    update: async (id: string, data: Record<string, any>) => {
-      const res = await fetch(`/api/${collection.slug}/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-      return res.json();
-    },
+    update: useMutation({
+      mutationFn: async ({
+        id,
+        data,
+      }: {
+        id: string;
+        data: Record<string, any>;
+      }) => {
+        const res = await fetch(`/api/${collection.slug}/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        return res.json();
+      },
+      onSuccess: () => {
+        qc.invalidateQueries({ queryKey: ['opaca', 'list', collection.slug] });
+        qc.invalidateQueries({ queryKey: ['opaca', 'get', collection.slug] });
+      },
+    }),
 
     // PATCH ITEM
-    patch: async (id: string, data: Record<string, any>) => {
-      const res = await fetch(`/api/${collection.slug}/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-      return res.json();
-    },
+    patch: useMutation({
+      mutationFn: async ({
+        id,
+        data,
+      }: {
+        id: string;
+        data: Record<string, any>;
+      }) => {
+        const res = await fetch(`/api/${collection.slug}/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        return res.json();
+      },
+      onSuccess: () => {
+        qc.invalidateQueries({ queryKey: ['opaca', 'list', collection.slug] });
+        qc.invalidateQueries({ queryKey: ['opaca', 'get', collection.slug] });
+      },
+    }),
 
     // DELETE ITEM
-    delete: async (id: string) => {
-      const res = await fetch(`/api/${collection.slug}/${id}`, {
-        method: 'DELETE',
-      });
-      return res.json();
-    },
+    delete: useMutation({
+      mutationFn: async (id: string) => {
+        const res = await fetch(`/api/${collection.slug}/${id}`, {
+          method: 'DELETE',
+        });
+        return res.json();
+      },
+      onSuccess: () => {
+        qc.invalidateQueries({ queryKey: ['opaca', 'list', collection.slug] });
+      },
+    }),
   };
 
   return {

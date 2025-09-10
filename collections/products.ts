@@ -4,7 +4,7 @@ import { ShoppingCartIcon } from "lucide-react";
 export const Products: OpacaCollection = {
   name: "Products",
   slug: "products",
-  icon: ShoppingCartIcon,
+  icon: "ShoppingCartIcon",
   fields: {
     title: { type: "textarea", required: true, indexed: true },
     price: { type: "number", required: true, indexed: true },

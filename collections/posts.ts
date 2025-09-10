@@ -1,7 +1,7 @@
 import { OpacaCollection } from "@/cms/types";
 
 export const Posts: OpacaCollection = {
-  name: "Post",
+  name: "Posts",
   slug: "posts",
   fields: {
     title: { type: "text", required: true, indexed: true },
@@ -10,6 +10,5 @@ export const Posts: OpacaCollection = {
     createdAt: { type: "date", default: "now" },
     authorId: { type: { relationship: { to: "posts" } }, indexed: true },
     tags: "array",
-    kind: { type: { enum: ["draft", "post", "note"] }, default: "draft" },
   },
 }

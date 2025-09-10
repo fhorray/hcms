@@ -1,4 +1,4 @@
-import * as schema from '@/server/db/schema';
+import * as schema from '@/cms/server/db/schema';
 
 type Schema = typeof schema;
 
@@ -15,8 +15,13 @@ export type InsertOf<K extends TableKeys> =
 export type IdOf<K extends TableKeys> =
   RowOf<K> extends { id: infer P } ? P : string | number;
 
-/** Array dinâmico com os nomes das tabelas (útil para gerar helpers) */
+/** 
+ * Dynamic array of table keys, is util to create generic functions
+ * that can work with any table in the schema
+*/
 export const tableKeys = Object.keys(schema).filter((k) => {
   const v = (schema as any)[k];
   return v && typeof v === 'object' && '$inferSelect' in v;
 }) as TableKeys[];
+
+const d = tableKeys 

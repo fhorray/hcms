@@ -1,12 +1,16 @@
-import { AdminHeader } from '@/components/cms/admin/admin-header';
-import { AdminSidebar } from '@/components/cms/admin/admin-sidebar';
+'use client';
+
+import React from 'react';
+
 import { SidebarProvider } from '@/components/ui/sidebar';
+import AdminSidebar from '@/cms/next/components/ui/admin-sidebar';
+import AdminHeader from '@/cms/next/components/ui/admin-header';
 
 interface CMSLayoutProps {
   children: React.ReactNode;
 }
 
-function CMSLayout({ children }: CMSLayoutProps) {
+export default function CMSLayout({ children }: CMSLayoutProps) {
   return (
     <div className="min-h-screen bg-background">
       <SidebarProvider defaultOpen>
@@ -15,7 +19,6 @@ function CMSLayout({ children }: CMSLayoutProps) {
 
           <div className="flex-1 flex flex-col">
             <AdminHeader />
-
             <main className="flex-1 overflow-auto">{children}</main>
           </div>
         </div>
@@ -23,5 +26,3 @@ function CMSLayout({ children }: CMSLayoutProps) {
     </div>
   );
 }
-
-export default CMSLayout;

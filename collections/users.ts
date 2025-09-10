@@ -4,7 +4,7 @@ import { UserIcon } from "lucide-react";
 export const Users: OpacaCollection = {
   name: "Users",
   slug: "users",
-  icon: UserIcon,
+  icon: "UserIcon",
   fields: {
     email:
     {

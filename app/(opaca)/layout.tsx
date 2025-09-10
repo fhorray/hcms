@@ -1,8 +1,10 @@
-import { MakeRootLayout } from '@/cms/admin';
-import config from '@/opaca.config';
+import type { ReactNode } from 'react';
+import config from '@opaca-config';
+import { MakeRootLayout } from '@/cms/next/views';
+import '@/cms/next/styles.css';
 
-const Layout = ({ children }: { children: React.ReactNode }) => (
-  <MakeRootLayout config={config}>{children}</MakeRootLayout>
-);
+export const dynamic = 'force-dynamic'; // Admin should not be statically generated
 
-export default Layout;
+export default function Layout({ children }: { children: ReactNode }) {
+  return <MakeRootLayout config={config}>{children}</MakeRootLayout>;
+}

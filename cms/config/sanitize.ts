@@ -40,7 +40,8 @@ export function sanitize(rawConfig: OpacaConfig): BuiltOpacaConfig {
       slug: computedSlug,
       primaryKey: raw.primaryKey ?? "id",
       fields,
-    } as OpacaCollection & { slug: string };
+      icon: raw.icon ?? "DatabaseIcon",
+    } as OpacaCollection & { slug: string; icon: string };
   });
 
   // 3) Check duplicates and build order index
@@ -59,9 +60,9 @@ export function sanitize(rawConfig: OpacaConfig): BuiltOpacaConfig {
   }
 
   // 4) Build the Record keyed by slug
-  const asRecord: Record<string, OpacaCollection> = {};
+  const asRecord: Record<string, OpacaCollection & { slug: string; icon: string }> = {};
   for (const c of list) {
-    asRecord[c.slug] = c;
+    asRecord[c.slug] = { ...c, slug: c.slug, icon: c.icon };
   }
 
   // 5) Compose final built config

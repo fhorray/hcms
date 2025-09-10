@@ -37,11 +37,11 @@ export type Dialect = "pg" | "sqlite";
 // ---- Public API ------------------------------------------------------------
 export function buildDrizzleTable(
   collection: OpacaCollection,
-  Dialect?: Dialect
+  dialect?: Dialect
 ) {
-  return process.env.OPACA_DB_DIALECT === "pg"
-    ? buildPgTable(collection)
-    : buildSqliteTable(collection);
+  return process.env.OPACA_DB_DIALECT === "d1" || process.env.OPACA_DB_DIALECT === "sqlite"
+    ? buildSqliteTable(collection)
+    : buildPgTable(collection)
 }
 
 // ----------------------------------------------------------------------------
@@ -133,12 +133,6 @@ function makePgColumn(name: string, f: OpacaField, isPk: boolean) {
   }
 
   // Object variants
-  if ("enum" in t) {
-    // Simple implementation: text column with union TS type for safety.
-    // If you want a true PG enum, define pgEnum outside and swap here.
-    return pgText(name).$type<(typeof t.enum)[number]>();
-  }
-
   if ("relationship" in t) {
     const rel = t.relationship;
     if (rel.many) {
@@ -232,10 +226,6 @@ function makeSqliteColumn(name: string, f: OpacaField, isPk: boolean) {
       default:
         return undefined;
     }
-  }
-
-  if ("enum" in t) {
-    return sqText(name).$type<(typeof t.enum)[number]>();
   }
 
   if ("relationship" in t) {

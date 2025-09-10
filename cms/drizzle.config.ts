@@ -10,7 +10,7 @@ export default
   process.env.OPACA_DB_DIALECT === "d1" ?
     defineConfig({
       schema: "./cms/server/db/schema.ts",
-      out: "./cms/server/db/migrations",
+      out: "./migrations",
       dialect: "sqlite",
       driver: "d1-http",
       dbCredentials: {
@@ -25,10 +25,10 @@ export default
     process.env.OPACA_DB_DIALECT === "sqlite" ?
       defineConfig({
         schema: "./cms/server/db/schema.ts",
-        out: "./cms/server/db/migrations",
+        out: "./migrations",
         dialect: "sqlite",
         dbCredentials: {
-          url: process.env.CMS_DATABASE_URL!
+          url: process.env.OPACA_DB_URL!
         },
         verbose: true,
         strict: false,
@@ -37,10 +37,10 @@ export default
       // postgres config
       defineConfig({
         schema: "./cms/server/db/schema.ts",
-        out: "./cms/server/db/migrations",
+        out: "./migrations",
         dialect: "postgresql",
         dbCredentials: {
-          url: process.env.CMS_DATABASE_URL!
+          url: process.env.OPACA_DB_URL!
         },
         verbose: true,
         strict: false,
