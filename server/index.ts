@@ -3,12 +3,13 @@ import * as schema from "@/server/db/schema";
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { getDb } from "./db";
+import { PgTable } from "drizzle-orm/pg-core";
 
 type Bindings = { DB: D1Database };
 const api = new Hono<{ Bindings: Bindings }>().basePath('/api');
 
 // CRUD ROUTES
-for (const [key, col] of Object.entries(schema)) {
+for (const [key, col] of Object.entries(schema as PgTable)) {
   // GET /api/<collection>
   api.get(`/${key}`, async (c) => {
     const db = getDb()
@@ -27,7 +28,7 @@ for (const [key, col] of Object.entries(schema)) {
         data[k] = JSON.stringify(v);
       }
     }
-    const [res] = await db.insert(col).values(data).returning();
+    const [res] = await db.insert(col).values(data).returning().get();
     return c.json(res);
   });
 
@@ -45,7 +46,7 @@ for (const [key, col] of Object.entries(schema)) {
     const db = getDb()
     const { id } = c.req.param();
     const data = await c.req.json();
-    const [res] = await db.update(col).set(data).where(eq(col.id, id)).returning();
+    const [res] = await db.update(col).set(data).where(eq(col.id, id)).returning().get();
     if (!res) return c.json({ error: 'Not found' }, 404);
     return c.json(res);
   });
@@ -54,7 +55,7 @@ for (const [key, col] of Object.entries(schema)) {
   api.delete(`/${key}/:id`, async (c) => {
     const db = getDb()
     const { id } = c.req.param();
-    const [res] = await db.delete(col).where(eq(col.id, id)).returning();
+    const [res] = await db.delete(col).where(eq(col.id, id)).returning().get();
     if (!res) return c.json({ error: 'Not found' }, 404);
     return c.json(res);
   });
@@ -66,7 +67,7 @@ api.get("/_schema/:resource", (c) => {
   if (!(schema as any)[name]) {
     return c.json({ error: 'Not found' }, 404);
   }
-  const data = collections.collections.find((f) => f.name.toLowerCase() === name.toLowerCase())
+  const data = Object.values(collections).find((f) => f.name.toLowerCase() === name.toLowerCase())
 
   return c.json({ ...data });
 

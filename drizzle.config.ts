@@ -6,7 +6,7 @@ dotenv.config({
 
 export default
 
-  process.env.CMS_DB === "sqlite" ?
+  process.env.OPACA_DB_DIALECT === "sqlite" ?
     defineConfig({
       schema: "./server/db/schema.ts",
       out: "./server/db/migrations",

@@ -1,6 +1,5 @@
 'use client';
 
-import { zod } from '@/cms/helpers/drizzle';
 import { DynamicField } from '@/components/cms/admin/dynamic-field';
 import { useAppForm } from '@/components/form/form-context';
 import { Button } from '@/components/ui/button';
@@ -41,22 +40,18 @@ export default function CollectionForm() {
       </div>
     );
   }
-
-  // Create dynamic schema based on collection fields
-  const createSchema =
-    zod.insert[collectionData.name as keyof typeof zod.insert];
-
-  type FormData = z.infer<typeof createSchema>;
+  type FormData = any; // TODO: Fix this with proper typing
 
   // Get default values
   const getDefaultValues = (): Partial<FormData> => {
     const defaults: any = itemData ?? {};
 
-    Object.entries(collectionData?.fields).forEach(([fieldName, field]) => {
+    Object.entries(collectionData.fields).forEach(([fieldName, field]) => {
       if (
         typeof field !== 'string' &&
         !('enum' in field) &&
         !('relation' in field) &&
+        'default' in field &&
         field.default !== undefined
       ) {
         defaults[fieldName] = field.default;

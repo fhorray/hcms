@@ -1,4 +1,4 @@
-import { CollectionInput } from '@/cms/types';
+import { OpacaCollection } from '@/cms/types';
 import { Button } from '@/components/ui/button';
 import {
   ArrowLeftIcon,
@@ -13,7 +13,7 @@ import { CollectionFieldsInfo } from './collection-fields-info';
 export const CollectionHeader = ({
   collection,
 }: {
-  collection: CollectionInput;
+  collection: OpacaCollection;
 }) => {
   return (
     <div className="flex items-center justify-between">

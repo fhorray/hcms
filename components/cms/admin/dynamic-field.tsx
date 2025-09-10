@@ -2,7 +2,7 @@
 
 import collections from '@/cms/collections';
 import { withForm } from '@/components/form/form-context';
-import type { FieldDefInput, FieldTypeInput } from '@/cms/types';
+import type { OpacaField, FieldTypeInput } from '@/cms/types';
 
 type NormalizedField =
   | {
@@ -108,7 +108,7 @@ const canonPrimitive = (
 };
 
 function normalizeFieldDef(
-  input: FieldDefInput | FieldTypeInput,
+  input: OpacaField | FieldTypeInput,
 ): NormalizedField {
   // string direta ('Text', 'RichText', etc.)
   if (typeof input === 'string') {
@@ -125,7 +125,7 @@ function normalizeFieldDef(
     return { kind: 'relation', relation: r };
   }
 
-  // FieldDefInput com .type
+  // OpacaField com .type
   const { type, required, default: def } = input as any;
 
   if (typeof type === 'string') {
@@ -155,14 +155,14 @@ function normalizeFieldDef(
 
 interface DynamicFieldProps {
   name: string;
-  field: FieldDefInput | FieldTypeInput;
+  field: OpacaField | FieldTypeInput;
   label?: string;
   description?: string;
 }
 
 export const DynamicField = withForm({
   props: {} as DynamicFieldProps,
-  defaultValues: {},
+  defaultValues: {} as any,
   render: ({ form, name, field, description, label }) => {
     const info = normalizeFieldDef(field);
     const renderLabel = label ?? name.charAt(0).toUpperCase() + name.slice(1);

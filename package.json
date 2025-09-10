@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -14,11 +15,7 @@
     "up": "drizzle-kit migrate",
     "drop": "drizzle-kit drop",
     "studio": "drizzle-kit studio --port 3000 --verbose",
-    "ngrok": "ngrok http --url=refined-primarily-falcon.ngrok-free.app 3000",
-    "schema:gen": "bun scripts/generate-schema/index.ts && bun gen",
-    "db:sync": "bun run schema:gen && bun up",
-    "watch": "chokidar 'cms/**/*.ts' -c 'bun run db:sync'",
-    "dev": "concurrently \"next dev\" \"bun run watch\""
+    "ngrok": "ngrok http --url=refined-primarily-falcon.ngrok-free.app 3000"
   },
   "dependencies": {
     "@emoji-mart/react": "^1.1.1",

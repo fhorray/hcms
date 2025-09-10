@@ -19,11 +19,11 @@ import {
   ArrowRight,
   DatabaseIcon,
 } from 'lucide-react';
-import { CollectionInput } from '@/cms/types';
+import { OpacaCollection } from '@/cms/types';
 import Link from 'next/link';
 
 interface CollectionCardProps {
-  collection: CollectionInput;
+  collection: OpacaCollection;
 }
 
 export function CollectionCard({ collection }: CollectionCardProps) {

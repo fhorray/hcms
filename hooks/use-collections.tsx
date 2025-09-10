@@ -11,7 +11,7 @@ export const useCollections = () => {
     action?: string;
   }>();
 
-  const collectionData = collections.collections.find(
+  const collectionData = Object.values(collections).find(
     (c) =>
       (c.name.toLowerCase() || c.name.toLowerCase().replace(/\s+/g, '-')) ===
       collection,

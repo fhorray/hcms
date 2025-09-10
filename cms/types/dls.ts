@@ -28,7 +28,7 @@ export type FieldTypeInput =
   | { enum: string[] }
   | { relationship: { to: keyof typeof schema; many?: boolean; through?: string } };
 
-export type FieldDefInput = {
+export type OpacaField = {
   type: FieldTypeInput;
   required?: boolean;
   default?: unknown;
@@ -39,16 +39,16 @@ export type FieldDefInput = {
   references?: { table: string; field: string };
 };
 
-export type CollectionInput = {
+export type OpacaCollection = {
   name: string;               // "Posts"
   slug?: string;              // default: slugify(plural(name)) -> "posts"
   icon?: LucideIcon; // optional, for admin UI
-  fields: Record<string, FieldDefInput | FieldTypeInput>; // aceita shorthand: "text"
+  fields: Record<string, OpacaField | FieldTypeInput>; // aceita shorthand: "text"
   primaryKey?: string;        // default: "id" autoincrement (serial)
 };
 
-export type ProjectInput = {
-  collections: CollectionInput[];
+export type OpacaConfig = {
+  collections: OpacaCollection[];
 
   // ADD OTHER CONFIGS HERE
 };

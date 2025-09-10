@@ -1,5 +1,5 @@
 import collections from '@/cms/collections';
-import { CollectionInput } from '@/cms/types';
+import { OpacaCollection } from '@/cms/types';
 import { CollectionCard } from '@/components/cms/admin/collection-card';
 import {
   Card,
@@ -11,8 +11,8 @@ import {
 import { Database, FileText, Settings, TrendingUp } from 'lucide-react';
 
 export default function Dashboard() {
-  const totalCollections = collections.collections.length;
-  const totalFields = collections.collections.reduce(
+  const totalCollections = Object.values(collections).length;
+  const totalFields = Object.values(collections).reduce(
     (acc, collection) => acc + Object.keys(collection.fields).length,
     0,
   );
@@ -93,11 +93,11 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {collections.collections.map((collection) => (
+          {Object.values(collections).map((collection) => (
             // <div>{collection.name}</div>
             <CollectionCard
               key={collection.name}
-              collection={collection as unknown as CollectionInput}
+              collection={collection as unknown as OpacaCollection}
             />
           ))}
         </div>

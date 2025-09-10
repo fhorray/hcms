@@ -11,8 +11,8 @@ import {
 import { ArrowLeft, Database, Link } from 'lucide-react';
 
 import collections from '@/cms/collections';
-import { Select, Tables } from '@/cms/helpers/drizzle';
-import { CollectionInput } from '@/cms/types';
+
+import { OpacaCollection } from '@/cms/types';
 import { CollectionHeader } from '@/components/cms/admin/collection-header';
 import { CollectionItemsList } from '@/components/cms/admin/collection-items-list';
 import { useCollections } from '@/hooks/use-collections';
@@ -29,9 +29,9 @@ export default function CollectionPage() {
 
   // console.log({ collectionDbData });
 
-  const collectionData = collections.collections.find(
+  const collectionData = Object.values(collections).find(
     (c) => c.name.toLowerCase().replace(/\s+/g, '-') === collection,
-  ) as unknown as CollectionInput;
+  ) as unknown as OpacaCollection;
 
   if (!collectionData) {
     return (
@@ -116,9 +116,7 @@ export default function CollectionPage() {
           </CardContent>
         </Card>
       ) : (
-        <CollectionItemsList
-          items={collectionDbData as unknown as Select<Tables>[]}
-        />
+        <CollectionItemsList items={collectionDbData || []} />
       )}
     </div>
   );

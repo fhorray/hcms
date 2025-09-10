@@ -1,5 +1,5 @@
 import collections from '@/cms/collections';
-import { CollectionInput } from '@/cms/types';
+import { OpacaCollection } from '@/cms/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -98,7 +98,7 @@ export const CollectionFieldsInfo = ({
   collection,
 }: {
   children?: React.ReactNode;
-  collection: CollectionInput;
+  collection: OpacaCollection;
 }) => {
   const fieldEntries = Object.entries(collection.fields);
   const requiredFieldsCount = fieldEntries.filter(([_, field]) => {

@@ -135,12 +135,12 @@ export function createCrudHooks(fetchOpts?: FetcherOptions) {
 // Factory tipado por coleção
 // ------------------------------------------------------
 
-import config from "@/cms/collections";
+import collections from "@/cms/collections";
 
 const crud = createCrudHooks({ baseUrl: "/api" });
 
 export const autoCrud = Object.fromEntries(
-  config.collections.map((c) => [
+  Object.values(collections).map((c) => [
     c.name.toLowerCase(),
     {
       useList: (params?: Record<string, unknown>) =>

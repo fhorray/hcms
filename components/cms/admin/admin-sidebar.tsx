@@ -113,7 +113,7 @@ export function AdminSidebar({}: AdminSidebarProps) {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="flex flex-col gap-4">
-              {collections.collections.map((collection) => {
+              {Object.values(collections).map((collection) => {
                 const slug =
                   collection.name.toLowerCase() ||
                   collection.name.toLowerCase().replace(/\s+/g, '-');

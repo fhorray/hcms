@@ -1,15 +1,14 @@
-import { CollectionInput, FieldDefInput } from "../types";
+import { OpacaCollection, OpacaField } from "../types";
 
-export const Posts: CollectionInput = {
-  name: "Posts", fields: {
+export const Posts: OpacaCollection = {
+  name: "Post",
+  fields: {
     title: { type: "text", required: true, indexed: true },
-    content: "text",
-    published: { type: "boolean", default: false },
-    author: {
-      relation: { to: "users" }
-    },         // FK authorId -> users.id
-    tags: {
-      relation: { to: "tags", many: true }
-    }
-  }
-};
+    body: "rich-text",
+    published: { type: "checkbox", default: false, indexed: true },
+    createdAt: { type: "date", default: "now" },
+    authorId: { type: { relationship: { to: "posts" } }, indexed: true },
+    tags: "array",
+    kind: { type: { enum: ["draft", "post", "note"] }, default: "draft" },
+  },
+}

@@ -1,8 +1,5 @@
 'use client';
 
-import { zod } from '@/cms/helpers/drizzle';
-import type { Tables, Select } from '@/cms/helpers/drizzle';
-
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -109,24 +106,15 @@ function ColumnFilter({ allColumns }: { allColumns: string[] }) {
 // ---------------------------------------------
 //  Main component
 // ---------------------------------------------
-type Props<K extends Tables> = {
-  items: Select<K>[];
+type Props = {
+  items: any[];
 };
 
-export function CollectionItemsList<K extends Tables>({
-  // collection,
-  items,
-}: Props<K>) {
+export function CollectionItemsList({ items }: Props) {
   const params = useParams();
   const slug = params.collection;
 
   const { viewMode, visibleColumns } = useStore($tableFilters);
-
-  // Schemas (caso queira validar/formatar em algum momento)
-  const selectSchema = zod.select[slug as K];
-  const insertSchema = zod.insert[slug as K];
-  void selectSchema; // evitar TS unused caso não use agora
-  void insertSchema;
 
   // Lista de colunas: união das chaves de todos os itens
   const allColumns = useMemo(() => {
