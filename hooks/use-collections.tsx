@@ -1,7 +1,7 @@
 'use client';
 
 import { autoCrud } from '@/cms/client/crud';
-import collections from '@/cms/collections';
+import collections from '@/collections';
 import { useParams } from 'next/navigation';
 import { useRouter } from 'next/router';
 

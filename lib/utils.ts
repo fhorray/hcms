@@ -7,8 +7,11 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const slugify = (s: string) =>
-  s.trim().toLowerCase()
-    .replace(/[\s\-]+/g, '_')
-    .replace(/[^a-z0-9_]/g, '')
-    .replace(/^_+|_+$/g, '');
+  s.normalize("NFKC")
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^\p{Letter}\p{Number}-]/gu, "")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
 

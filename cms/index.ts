@@ -1,0 +1,1 @@
+export { buildOpacaConfig } from "./config"

@@ -1,6 +1,7 @@
 'use client';
 
-import collections from '@/cms/collections';
+import { useOpaca } from '@/cms/hooks';
+import collections from '@/collections';
 import {
   Sidebar,
   SidebarContent,
@@ -46,6 +47,7 @@ const getCollectionIcon = (
 };
 
 export function AdminSidebar({}: AdminSidebarProps) {
+  const { admin } = useOpaca();
   const { state } = useSidebar();
   const pathname = usePathname();
   const collapsed = state === 'collapsed';
@@ -67,7 +69,7 @@ export function AdminSidebar({}: AdminSidebarProps) {
           {!collapsed && (
             <div>
               <h2 className="text-lg font-semibold text-foreground">
-                CMS Admin
+                {admin?.appName}
               </h2>
               <p className="text-xs text-muted-foreground">
                 Content Management

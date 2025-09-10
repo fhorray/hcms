@@ -2,6 +2,8 @@
 
 import { useQuery, useMutation, useQueryClient, QueryKey } from '@tanstack/react-query';
 
+import collections from "@/collections";
+
 // Aceita string/number porque seu backend pode usar CUID (string) ou int
 type Id = string | number;
 
@@ -135,7 +137,6 @@ export function createCrudHooks(fetchOpts?: FetcherOptions) {
 // Factory tipado por coleção
 // ------------------------------------------------------
 
-import collections from "@/cms/collections";
 
 const crud = createCrudHooks({ baseUrl: "/api" });
 

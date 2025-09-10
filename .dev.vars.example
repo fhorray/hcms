@@ -7,5 +7,5 @@ CLOUDFLARE_DATABASE_ID=db_id
 CLOUDFLARE_ACCOUNT_ID=account_id
 CLOUDFLARE_TOKEN=cloudflare_token
 
-CMS_TARGET=remote
-CMS_DB=sqlite
+OPACA_TARGET=remote
+OPACA_DB_DIALECT=sqlite

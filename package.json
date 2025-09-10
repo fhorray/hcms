@@ -11,9 +11,9 @@
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "auth:generate": "bunx @better-auth/cli generate --output=./server/schema/auth.ts",
-    "gen": "drizzle-kit generate",
-    "up": "drizzle-kit migrate",
-    "drop": "drizzle-kit drop",
+    "gen": "bun cms/helpers/gen-schema.ts && drizzle-kit generate --config=./cms/drizzle.config.ts",
+    "up": "drizzle-kit migrate --config=./cms/drizzle.config.ts",
+    "drop": "drizzle-kit drop --config=./cms/drizzle.config.ts",
     "studio": "drizzle-kit studio --port 3000 --verbose",
     "ngrok": "ngrok http --url=refined-primarily-falcon.ngrok-free.app 3000"
   },

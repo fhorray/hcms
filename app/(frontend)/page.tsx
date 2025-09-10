@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { DatabaseIcon, FileTextIcon } from 'lucide-react';
-import Image from 'next/image';
+import config from '@opaca-config';
 
 export default function Home() {
   return (
@@ -8,10 +8,10 @@ export default function Home() {
       <div className="text-center space-y-6">
         <div className="space-y-2">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-700 bg-clip-text text-transparent">
-            CMS Headless
+            {config.admin.appName}
           </h1>
           <p className="text-xl text-muted-foreground">
-            Your modern content management system
+            {config.admin.appDescription}
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">

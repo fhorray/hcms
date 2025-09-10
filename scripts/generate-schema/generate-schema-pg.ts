@@ -1,6 +1,6 @@
 // scripts/generate-schema.ts
 import { writeFileSync } from 'node:fs';
-import schema from '@/cms/collections';
+import schema from "@/collections";
 
 // ---------- helpers ----------
 const slugify = (s: string) =>

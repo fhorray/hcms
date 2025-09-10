@@ -1,7 +1,7 @@
 // scripts/generate-schema.sqlite.ts
 // -------------------------------------------------------------
 // Gera o schema do Drizzle (SQLite por padrão) a partir de um
-// config estilo Payload definido em '@/cms/collections'.
+// config estilo Payload definido em "@/collections".
 //
 // Correções importantes:
 // 1) Suporte a relationship: aceita 'relationship', 'relation' e 'relationTo'.
@@ -17,7 +17,7 @@
 // -------------------------------------------------------------
 
 import { writeFileSync } from 'node:fs';
-import schema from '@/cms/collections';
+import schema from "@/collections";
 import { slugify } from '@/lib/utils';
 import dotenv from 'dotenv';
 dotenv.config({ path: '.dev.vars' });

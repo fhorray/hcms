@@ -48,6 +48,9 @@ export function buildDrizzleTable(
 // PG IMPLEMENTATION
 // ----------------------------------------------------------------------------
 function buildPgTable(collection: OpacaCollection) {
+  if (!collection) {
+    throw new Error("Collection is undefined");
+  }
   const slug = collection.slug ?? slugify(pluralize(collection.name));
 
   const columns: Record<string, any> = {};
@@ -153,6 +156,10 @@ function makePgColumn(name: string, f: OpacaField, isPk: boolean) {
 // SQLITE IMPLEMENTATION
 // ----------------------------------------------------------------------------
 function buildSqliteTable(collection: OpacaCollection) {
+
+  if (!collection) {
+    throw new Error("Collection is undefined");
+  }
   const slug = collection.slug ?? slugify(pluralize(collection.name));
 
   const columns: Record<string, any> = {};

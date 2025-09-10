@@ -1,6 +1,6 @@
 'use client';
 
-import collections from '@/cms/collections';
+import collections from '@/collections';
 import { withForm } from '@/components/form/form-context';
 import type { OpacaField, FieldTypeInput } from '@/cms/types';
 
