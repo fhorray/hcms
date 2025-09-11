@@ -1,14 +1,20 @@
-import collections from "@/collections";
 import * as schema from "@/cms/server/db/schema";
-import { AnyTable, eq } from "drizzle-orm";
+import collections from "@/collections";
+import { eq } from "drizzle-orm";
 import { Hono } from "hono";
-import { getDbD1, getDbPg, runtime } from "./db";
+import { auth } from "../auth";
+import { getDbD1, getDbPg } from "./db";
 
 type Bindings = {};
 const api = new Hono<{ Bindings: Bindings }>().basePath('/api');
 
+// WELCOME
 api.get("/", (c) => c.json({ status: "ok", message: "Welcome to Opaca CMS API" }));
 
+// AUTH
+api.on(["POST", "GET"], "/auth/**", (c) => auth.handler(c.req.raw));
+
+// SCHEMA INFO
 api.get("/_schema/:resource", (c) => {
   const name = c.req.param("resource");
 
@@ -21,12 +27,12 @@ api.get("/_schema/:resource", (c) => {
 
 });
 
-
+const runtime = process.env.OPACA_DB_DIALECT!
 
 // CRUD ROUTES
 // --- SQLITE-LIKE (D1/sqlite) ---
 if (runtime === "sqlite" || runtime === "d1") {
-  const db = getDbD1(); // typed as D1 DB
+  const db = await getDbD1(); // typed as D1 DB
 
   for (const [key, col] of Object.entries(schema)) {
     api.get(`/${key}`, async (c) => {

@@ -170,10 +170,9 @@ export const DynamicField = withForm({
       <form.AppField name={name}>
         {(fieldForm) => {
           if (info.kind === 'primitive') {
-            // converte os tipos estilo Payload para os tokens do seu switch antigo
-            const token = canonPrimitive(info.type, field);
+            const type = info.type as FieldTypeInput;
 
-            switch (token) {
+            switch (type) {
               case 'text':
                 return (
                   <fieldForm.InputField
@@ -192,7 +191,7 @@ export const DynamicField = withForm({
                   />
                 );
 
-              case 'boolean':
+              case 'switcher':
                 return (
                   <fieldForm.SwitcherField
                     id={name}
@@ -200,24 +199,13 @@ export const DynamicField = withForm({
                   />
                 );
 
-              case 'int':
+              case 'number':
                 return (
                   <fieldForm.NumberField
                     id={name}
                     label={renderLabel ?? name}
                     description={description}
                     step={1}
-                    placeholder={`Digite ${name}...`}
-                  />
-                );
-
-              case 'float':
-                return (
-                  <fieldForm.NumberField
-                    id={name}
-                    label={renderLabel ?? name}
-                    description={description}
-                    step={0.01}
                     placeholder={`Digite ${name}...`}
                   />
                 );
@@ -232,16 +220,6 @@ export const DynamicField = withForm({
                 );
 
               case 'date':
-                return (
-                  <fieldForm.DateField
-                    id={name}
-                    label={renderLabel ?? name}
-                    description={description}
-                    displayFormat="dd/MM/yyyy HH:mm"
-                  />
-                );
-
-              case 'datetime':
                 return (
                   <fieldForm.DateField
                     id={name}

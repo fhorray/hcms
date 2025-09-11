@@ -113,15 +113,15 @@ const CollectionFieldsInfo = ({
         )}
       </SheetTrigger>
 
-      <SheetContent className="!max-w-[40vw] space-y-4">
-        <SheetHeader>
+      <SheetContent className="!max-w-[40vw] space-y-4 px-4">
+        <SheetHeader className="px-0 pb-0">
           <SheetTitle className="flex items-center gap-2">
             <DatabaseIcon className="w-5 h-5" />
             Collection Fields
           </SheetTitle>
           <SheetDescription>
-            Field definitions and their configurations for the {collection.name}{' '}
-            collection data.
+            Field definitions and their configurations for the{' '}
+            {collection.name.toLowerCase()} collection data.
           </SheetDescription>
         </SheetHeader>
         <div className="grid gap-4">

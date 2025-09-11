@@ -1,11 +1,12 @@
-# Load .env.development* files when running `wrangler dev`
+# Load .env.development* files when running wrangler dev
 NEXTJS_ENV=development
 
-NEXT_PUBLIC_BASE_URL=http://localhost:3000
+CLOUDFLARE_DATABASE_ID=database-id
+CLOUDFLARE_ACCOUNT_ID=account-id
+CLOUDFLARE_TOKEN=api-token
 
-CLOUDFLARE_DATABASE_ID=db_id
-CLOUDFLARE_ACCOUNT_ID=account_id
-CLOUDFLARE_TOKEN=cloudflare_token
-
-OPACA_TARGET=remote
-OPACA_DB_DIALECT=sqlite
+OPACA_SECRET=secret
+OPACA_DB_URL=postgresql://...
+OPACA_DB_TARGET=remote
+OPACA_DB_DIALECT=pg
+OPACA_BASE_URL=http://localhost:3000

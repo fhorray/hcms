@@ -5,13 +5,13 @@ export type ViewMode = 'grid' | 'list';
 export interface TableFilters {
   viewMode: ViewMode;
   favorites: string[];
-  visibleColumns: Record<string, boolean>; // <== chave = nome/id da coluna
+  visibleColumns: Record<string, boolean>;
 }
 
 const defaultFilters: TableFilters = {
   viewMode: 'list',
   favorites: [],
-  visibleColumns: {}, // começa vazio, vai sendo populado conforme o usuário interage
+  visibleColumns: {},
 };
 
 export const $tableFilters = persistentAtom<TableFilters>(
@@ -39,7 +39,6 @@ const toggleViewMode = (view?: TableFilters['viewMode']) => {
   });
 };
 
-// Define se uma coluna será visível ou não
 const toggleColumnVisibility = (columnId: string) => {
   const current = $tableFilters.get();
   const visibleColumns = { ...current.visibleColumns };
@@ -47,7 +46,6 @@ const toggleColumnVisibility = (columnId: string) => {
   $tableFilters.set({ ...current, visibleColumns });
 };
 
-// Força todas as colunas a ficarem visíveis (ex: reset)
 const showAllColumns = (columns: string[]) => {
   const current = $tableFilters.get();
   const visibleColumns: Record<string, boolean> = {};

@@ -1,6 +1,7 @@
 import * as Lucide from 'lucide-react';
 import { LucideIcon } from "lucide-react";
 import * as schema from "../server/db/schema";
+import { betterAuth, BetterAuthOptions } from 'better-auth';
 
 // Entrada mais amigável (opções só quando quiser)
 export type FieldTypeInput =
@@ -86,7 +87,8 @@ export type OpacaConfig = {
       limit?: number;
     };
     user?: string;
-  }
+  },
+  auth: Pick<BetterAuthOptions, "hooks" | "databaseHooks" | "advanced" | "emailAndPassword" | "baseURL" | "trustedOrigins" | "plugins" | "user" | "emailVerification" | "basePath" | "account" | "session" | "verification" | "socialProviders">;
 };
 
 
