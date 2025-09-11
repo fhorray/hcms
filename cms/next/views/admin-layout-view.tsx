@@ -1,16 +1,18 @@
 'use client';
 
-import React from 'react';
-
 import { SidebarProvider } from '@/components/ui/sidebar';
-import AdminSidebar from '@/cms/next/components/ui/admin-sidebar';
-import AdminHeader from '@/cms/next/components/ui/admin-header';
+import React from 'react';
+import AdminSidebar from '../components/ui/admin-sidebar';
+import AdminHeader from '../components/ui/admin-header';
+import { usePathname } from 'next/navigation';
 
-interface CMSLayoutProps {
-  children: React.ReactNode;
-}
+const AdminLayoutView = ({ children }: { children: React.ReactNode }) => {
+  const path = usePathname();
 
-export default function CMSLayout({ children }: CMSLayoutProps) {
+  if (path === '/admin/login') {
+    return <>{children}</>;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <SidebarProvider defaultOpen>
@@ -25,4 +27,6 @@ export default function CMSLayout({ children }: CMSLayoutProps) {
       </SidebarProvider>
     </div>
   );
-}
+};
+
+export default AdminLayoutView;

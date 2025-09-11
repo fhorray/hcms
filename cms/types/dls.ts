@@ -3,8 +3,15 @@ import { LucideIcon } from "lucide-react";
 import * as schema from "../server/db/schema";
 import { betterAuth, BetterAuthOptions } from 'better-auth';
 
-// Entrada mais amigável (opções só quando quiser)
-export type FieldTypeInput =
+// ---------- FieldTypeInput refinado ----------
+
+// All export names that are React icon components
+export type LucideIconName = {
+  [K in keyof typeof Lucide]: (typeof Lucide)[K] extends LucideIcon ? K : never
+}[keyof typeof Lucide];
+
+// Base primitive types
+export type PrimitiveFieldType =
   | 'array'
   | 'blocks'
   | 'checkbox'
@@ -20,47 +27,80 @@ export type FieldTypeInput =
   | 'radio-group'
   | 'rich-text'
   | 'join'
-  | 'row'
-  | 'select'
   | 'tabs'
   | 'text'
   | 'textarea'
   | 'ui'
-  | 'upload'
-  | { relationship: { to: keyof typeof schema; many?: boolean; through?: string } };
+  | 'upload';
 
-export type OpacaField = {
-  type: FieldTypeInput;
+// Relationship type
+export type RelationshipFieldType = {
+  relationship: { to: keyof typeof schema; many?: boolean; through?: string };
+};
+
+// Row type (container, sem `name` obrigatório)
+export type RowFieldType = {
+  row: OpacaField[];
+};
+
+// Select type
+export type SelectFieldType = {
+  select: {
+    options: { label: string; value: string | number }[];
+    multiple?: boolean;
+    relationship?: { to: keyof typeof schema; valueField: string };
+  };
+};
+
+export type FieldTypeInput =
+  | PrimitiveFieldType
+  | RelationshipFieldType
+  | RowFieldType
+  | SelectFieldType;
+
+
+// ---------- Field definition ----------
+
+// Campos "normais" (precisam de name)
+export type BaseOpacaField = {
+  name: string;
+  type: Exclude<FieldTypeInput, RowFieldType>; // não pode ser row
   required?: boolean;
   default?: unknown;
   unique?: boolean;
   indexed?: boolean;
   columnName?: string;
-  // se quiser forçar, ainda pode:
   references?: { table: string; field: string };
+  hidden?: boolean;
+  layout?: { col?: number };
 };
 
+// Campo do tipo "row" (não precisa de name)
+export type RowOpacaField = {
+  type: RowFieldType;
+  required?: boolean;
+  hidden?: boolean;
+  layout?: { col?: number };
+};
 
-// All export names that are React icon components
-export type LucideIconName = {
-  [K in keyof typeof Lucide]: (typeof Lucide)[K] extends LucideIcon ? K : never
-}[keyof typeof Lucide];
+// União final
+export type OpacaField = BaseOpacaField | RowOpacaField;
 
 export type OpacaCollection = {
   name: string;               // "Posts"
-  slug: string; // default: slugify(plural(name)) -> "posts"
+  slug?: string; // default: slugify(plural(name)) -> "posts"
   icon?: LucideIconName; // default: "Collection" icon
-  fields: Record<string, OpacaField | FieldTypeInput>; // aceita shorthand: "text"
-  primaryKey?: string;        // default: "id" autoincrement (serial)
-  required?: boolean
+  fields: OpacaField[];
+  required?: boolean;
+  hidden?: boolean;
 };
 
 export type OpacaConfig = {
   collections: OpacaCollection[];
   database?: {
-    schemas: any;
+    dialect: string;
   }
-  admin: {
+  admin?: {
     appName?: string;
     appDescription?: string;
     appLang?: string;
@@ -88,7 +128,22 @@ export type OpacaConfig = {
     };
     user?: string;
   },
-  auth: Pick<BetterAuthOptions, "hooks" | "databaseHooks" | "advanced" | "emailAndPassword" | "baseURL" | "trustedOrigins" | "plugins" | "user" | "emailVerification" | "basePath" | "account" | "session" | "verification" | "socialProviders">;
+  auth: Omit<BetterAuthOptions, "plugins" | "baseURL"> & {
+    plugins?: {
+      admin?: {
+
+      },
+      apiKey?: {
+        enabled?: boolean; // default false
+        name: string,
+        expiresIn: number,
+        prefix: string,
+        metadata: any | null,
+        permissions: Record<string, string[]>
+      }
+
+    }
+  };
 };
 
 

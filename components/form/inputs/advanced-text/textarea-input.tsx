@@ -33,7 +33,7 @@ const TextAreaField = ({
       <div className="w-full">
         <Textarea
           id={id}
-          value={field.state.value}
+          value={field.state.value ?? ''}
           onChange={(e) => {
             setCharacterCount(e.target.value.length);
             field.setValue(e.target.value);

@@ -16,33 +16,33 @@ CREATE TABLE `accounts` (
 );
 --> statement-breakpoint
 CREATE TABLE `posts` (
-	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`id` text PRIMARY KEY NOT NULL,
 	`title` text NOT NULL,
 	`body` text,
 	`published` integer DEFAULT false,
-	`createdAt` integer DEFAULT (cast((julianday('now') - 2440587.5)*86400000 as integer)),
-	`authorId` integer,
+	`created_at` integer DEFAULT (cast((julianday('now') - 2440587.5)*86400000 as integer)),
+	`author_id` integer,
 	`tags` text
 );
 --> statement-breakpoint
 CREATE INDEX `posts_title_idx` ON `posts` (`title`);--> statement-breakpoint
 CREATE INDEX `posts_published_idx` ON `posts` (`published`);--> statement-breakpoint
-CREATE INDEX `posts_authorId_idx` ON `posts` (`authorId`);--> statement-breakpoint
+CREATE INDEX `posts_author_id_idx` ON `posts` (`author_id`);--> statement-breakpoint
 CREATE TABLE `products` (
-	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`id` text PRIMARY KEY NOT NULL,
 	`title` text NOT NULL,
 	`price` integer NOT NULL,
-	`inStock` integer DEFAULT true,
+	`in_stock` integer DEFAULT true,
 	`tags` text,
 	`description` text,
-	`releaseDate` integer
+	`release_date` integer
 );
 --> statement-breakpoint
 CREATE INDEX `products_title_idx` ON `products` (`title`);--> statement-breakpoint
 CREATE INDEX `products_price_idx` ON `products` (`price`);--> statement-breakpoint
-CREATE INDEX `products_inStock_idx` ON `products` (`inStock`);--> statement-breakpoint
+CREATE INDEX `products_in_stock_idx` ON `products` (`in_stock`);--> statement-breakpoint
 CREATE TABLE `properties` (
-	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`id` text PRIMARY KEY NOT NULL,
 	`title` text NOT NULL,
 	`description` text,
 	`price` integer NOT NULL,
@@ -64,9 +64,7 @@ CREATE TABLE `sessions` (
 --> statement-breakpoint
 CREATE UNIQUE INDEX `sessions_token_unique` ON `sessions` (`token`);--> statement-breakpoint
 CREATE TABLE `users` (
-	`id` text PRIMARY KEY NOT NULL,
-	`name` text NOT NULL,
-	`email` text NOT NULL,
+	`id` text NOT NULL,
 	`email_verified` integer DEFAULT false NOT NULL,
 	`image` text,
 	`created_at` integer NOT NULL,
@@ -78,8 +76,6 @@ CREATE TABLE `users` (
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `users_id_unique` ON `users` (`id`);--> statement-breakpoint
-CREATE UNIQUE INDEX `users_email_unique` ON `users` (`email`);--> statement-breakpoint
-CREATE INDEX `users_email_idx` ON `users` (`email`);--> statement-breakpoint
 CREATE TABLE `verifications` (
 	`id` text PRIMARY KEY NOT NULL,
 	`identifier` text NOT NULL,

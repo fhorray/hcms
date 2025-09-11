@@ -1,5 +1,7 @@
 'use client';
 
+/* NOTE: Comments must stay in English only. */
+
 import { useOpaca } from '@/cms/hooks';
 import { useAppForm } from '@/components/form/form-context';
 import { Button } from '@/components/ui/button';
@@ -7,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Save, XIcon } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { DynamicField } from '../components';
+import type { OpacaField, FieldTypeInput } from '@/cms/types';
 
 export default function CollectionForm() {
   const router = useRouter();
@@ -42,28 +45,53 @@ export default function CollectionForm() {
     );
   }
 
-  type FormData = any; // TODO: Replace with a proper typed shape
+  type FormData = Record<string, any>;
 
-  // Build default values
-  const getDefaultValues = (): Partial<FormData> => {
-    const defaults: any = itemData ?? {};
-    Object.entries(current.fields).forEach(([fieldName, field]) => {
-      if (
-        typeof field !== 'string' &&
-        !('enum' in field) &&
-        !('relation' in field) &&
-        'default' in field &&
-        field.default !== undefined
-      ) {
-        defaults[fieldName] = field.default;
+  // ------------ helpers for defaults (supports row recursively) ------------
+  const isRowType = (t: FieldTypeInput): t is { row: OpacaField[] } =>
+    typeof t === 'object' && !!t && 'row' in t && Array.isArray((t as any).row);
+
+  function applyDefaultsFromFields(
+    fields: OpacaField[] | undefined,
+    target: Record<string, any>,
+  ) {
+    if (!fields?.length) return target;
+
+    for (const f of fields) {
+      if (!f || !f.name) continue;
+
+      // Layout/hidden handling: skip hidden fields from form if desired.
+      // If you still want hidden defaults applied, remove this guard.
+      if (f.hidden) continue;
+
+      const t = f.type;
+
+      // Row container: ensure nested object and recurse for children
+      if (isRowType(t)) {
+        const container = (target[f.name] ??= {});
+        applyDefaultsFromFields(t.row, container);
+        continue;
       }
-    });
-    return defaults;
+
+      // Primitive/enum/relation: set default only if value is currently undefined
+      const hasValue = target[f.name] !== undefined;
+      if (!hasValue && 'default' in f && f.default !== undefined) {
+        target[f.name] = f.default;
+      }
+    }
+    return target;
+  }
+
+  // Build default values: start from itemData (edit case), then hydrate defaults from schema
+  const getDefaultValues = (): Partial<FormData> => {
+    const base: Record<string, any> = (itemData ?? {}) as Record<string, any>;
+    return applyDefaultsFromFields(current.fields, { ...base });
   };
 
   const form = useAppForm({
-    defaultValues: getDefaultValues() ?? ({} as FormData),
+    defaultValues: getDefaultValues(),
     onSubmit: async ({ value }) => {
+      console.log({ value });
       if (isEditing && itemId) {
         update.mutate({ id: itemId, data: value });
       } else {
@@ -113,10 +141,11 @@ export default function CollectionForm() {
             className="space-y-6"
           >
             <div className="grid gap-6">
-              {Object.entries(current.fields).map(([fieldName, field]) => (
+              {/* current.fields is now OpacaField[] */}
+              {current.fields.map((field) => (
                 <DynamicField
-                  key={fieldName}
-                  name={fieldName}
+                  name={field.name}
+                  key={field.name}
                   field={field}
                   form={form}
                 />

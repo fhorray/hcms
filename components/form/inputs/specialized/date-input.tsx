@@ -147,7 +147,7 @@ const DatePickerField: React.FC<DatePickerFieldProps> = ({
               id={id}
               variant="outline"
               className={cn(
-                'w-full justify-start text-left font-normal',
+                'w-full justify-start text-left font-normal cursor-pointer',
                 'pl-7',
                 !selectedDate && 'text-muted-foreground',
               )}
@@ -165,6 +165,7 @@ const DatePickerField: React.FC<DatePickerFieldProps> = ({
               fromDate={minDate}
               toDate={maxDate}
               locale={ptBR}
+              className="w-full"
             />
           </PopoverContent>
         </Popover>

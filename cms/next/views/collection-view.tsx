@@ -12,11 +12,10 @@ import { ArrowLeft, Database, Link } from 'lucide-react';
 
 import { useOpaca } from '@/cms/hooks';
 
-import { useParams } from 'next/navigation';
 import { OpacaCollection } from '@/cms/types';
+import { useParams } from 'next/navigation';
 import CollectionHeader from '../components/ui/collection-header';
 import CollectionItemsList from '../components/ui/collection-items-list';
-import { useRouter } from 'next/router';
 
 export default function CollectionPage() {
   const { paths } = useParams() as { paths?: string[] };
@@ -28,7 +27,7 @@ export default function CollectionPage() {
     collections: { current },
   } = useOpaca();
 
-  const collectionItems = api.list.data as OpacaCollection[];
+  const collectionItems = api.list.data;
 
   if (!current) {
     return (
@@ -66,7 +65,9 @@ export default function CollectionPage() {
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Total Items
             </CardTitle>
-            <div className="text-2xl font-bold">{collectionItems?.length}</div>
+            <div className="text-2xl font-bold">
+              {collectionItems?.data?.length}
+            </div>
           </CardHeader>
         </Card>
 
@@ -83,15 +84,13 @@ export default function CollectionPage() {
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Primary Key
             </CardTitle>
-            <div className="text-2xl font-bold">
-              {current.primaryKey || 'id'}
-            </div>
+            <div className="text-2xl font-bold">{'id'}</div>
           </CardHeader>
         </Card>
       </div>
 
       {/* Items */}
-      {collectionItems?.length === 0 ? (
+      {collectionItems?.data?.length === 0 ? (
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -113,7 +112,7 @@ export default function CollectionPage() {
           </CardContent>
         </Card>
       ) : (
-        <CollectionItemsList items={collectionItems || []} />
+        <CollectionItemsList items={collectionItems?.data || []} />
       )}
     </div>
   );

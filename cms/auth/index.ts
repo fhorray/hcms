@@ -1,15 +1,16 @@
-// auth.ts
 import config from "@opaca-config"
 import { betterAuth } from "better-auth"
+import { apiKey, admin } from "better-auth/plugins"
 import { drizzleAdapter, type DrizzleAdapterConfig } from "better-auth/adapters/drizzle"
-import { getDbD1, getDbPg } from "../server/db"
+import { getDb } from "../server/db"
 import { Kysely, CamelCasePlugin } from "kysely"
-import { D1Dialect, D1DialectConfig } from "kysely-d1"
+import { D1Dialect } from "kysely-d1"
 import { getCloudflareContext } from "@opennextjs/cloudflare"
+
+const dialect = process.env.OPACA_DB_DIALECT;
 
 // Build Kysely for D1 only when needed
 async function makeD1Kysely() {
-  // Important: call in async context (not top-level in static route)
   const ctx = await getCloudflareContext({ async: true });
   return new Kysely({
     dialect: new D1Dialect({ database: ctx.env.DB }),
@@ -17,52 +18,38 @@ async function makeD1Kysely() {
   });
 }
 
-const dialect = process.env.OPACA_DB_DIALECT;
+// Provider mapping for Drizzle adapter
+const provider: DrizzleAdapterConfig["provider"] = dialect === "d1" || dialect === "sqlite" ? "sqlite" : "pg";
 
-// Fix 1: always call helpers that return clients
-const pgDrizzle = () => getDbPg();
-const sqliteDrizzle = () => getDbD1();
+// Get Plugins info inside config
+const plugins = [
+  admin(config.auth.plugins?.admin),
+  ...(config.auth.plugins?.apiKey?.enabled
+    ? [apiKey(config.auth.plugins.apiKey)]
+    : []),
+];
 
-const provider: DrizzleAdapterConfig["provider"] =
-  dialect === "d1" || dialect === "sqlite" ? "sqlite" : "pg";
-
-// Route by dialect
+// Export single auth instance
 export const auth = await (async () => {
   if (dialect === "d1") {
-    // Kysely built-in adapter
+    // Use Kysely when dialect = d1
     const d1Db = await makeD1Kysely();
     return betterAuth({
       ...config.auth,
-      // Better Auth Kysely path expects { db: ... }
-      database: { db: d1Db },
-      user: {
-        modelName: "users",
-      },
-      account: {
-        modelName: "accounts",
-      },
-      session: {
-        modelName: "sessions",
-      },
-      verification: {
-        modelName: "verifications",
-      }
+      database: { db: d1Db }, // Kysely mode
+      user: { modelName: "users" },
+      account: { modelName: "accounts" },
+      session: { modelName: "sessions" },
+      verification: { modelName: "verifications" },
+      plugins,
     });
   }
 
-  if (dialect === "sqlite") {
-    // Drizzle + SQLite
-    const db = sqliteDrizzle();
-    return betterAuth({
-      ...config.auth,
-      database: drizzleAdapter(db, { provider }), // provider = "sqlite"
-    });
-  }
-
-  // Postgres via Drizzle
-  const db = pgDrizzle();
+  // For sqlite + pg use drizzle adapter
+  const db = await getDb();
   return betterAuth({
     ...config.auth,
-    database: drizzleAdapter(db, { provider }), // provider = "pg"
+    database: drizzleAdapter(db, { provider }),
+    plugins,
   });
 })();

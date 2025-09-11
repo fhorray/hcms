@@ -3,12 +3,12 @@ import { OpacaCollection } from "@/cms/types";
 export const Posts: OpacaCollection = {
   name: "Posts",
   slug: "posts",
-  fields: {
-    title: { type: "text", required: true, indexed: true },
-    body: "rich-text",
-    published: { type: "checkbox", default: false, indexed: true },
-    createdAt: { type: "date", default: "now" },
-    authorId: { type: { relationship: { to: "posts" } }, indexed: true },
-    tags: "array",
-  },
-}
+  fields: [
+    { name: "title", type: "text", required: true, indexed: true },
+    { name: "body", type: "rich-text" },
+    { name: "published", type: "checkbox", default: false, indexed: true },
+    { name: "createdAt", type: "date", default: "now" },
+    { name: "authorId", type: { relationship: { to: "users" } }, indexed: true },
+    { name: "tags", type: "array" },
+  ],
+};

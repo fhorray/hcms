@@ -5,7 +5,15 @@ import config from '@opaca-config';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import { OpacaCollection } from '../types';
-import * as schema from '../server/db/schema';
+import { auth } from '../auth';
+import { authClient } from '../auth/client';
+
+export type TApiResponse<T> = {
+  data: T[];
+  page: number;
+  pageSize: number;
+  total: number;
+};
 
 export const useOpaca = () => {
   const qc = useQueryClient();
@@ -33,7 +41,8 @@ export const useOpaca = () => {
       queryKey: ['opaca', 'list', collection.slug],
       queryFn: async () => {
         const res = await fetch(`/api/${collection.slug}`);
-        return res.json();
+        const data = (await res.json()) as TApiResponse<any>;
+        return data;
       },
       enabled: !!collection.slug,
     }),
@@ -123,6 +132,8 @@ export const useOpaca = () => {
     }),
   };
 
+  const authOpts = authClient;
+
   return {
     isEditing,
     itemId,
@@ -141,6 +152,7 @@ export const useOpaca = () => {
       },
     },
     api,
+    auth: authOpts,
     admin: config.admin,
     index: config._index,
     database: config.database,

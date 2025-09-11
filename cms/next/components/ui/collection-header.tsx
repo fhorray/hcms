@@ -17,7 +17,11 @@ const CollectionHeader = ({ collection }: { collection: OpacaCollection }) => {
           <div>
             <h1 className="text-3xl font-bold">{collection.name}</h1>
             <p className="text-muted-foreground">
-              Manage {collection.name?.toLowerCase()} collection
+              Manage{' '}
+              <span className="font-bold">
+                {collection.name?.toLowerCase()}
+              </span>{' '}
+              collection
             </p>
           </div>
         </div>

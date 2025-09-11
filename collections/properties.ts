@@ -3,10 +3,10 @@ import { OpacaCollection } from "@/cms/types";
 export const Properties: OpacaCollection = {
   name: "Properties",
   slug: "properties",
-  fields: {
-    title: { type: "text", required: true },
-    description: { type: "text" },
-    price: { type: "number", required: true },
-    available: { type: "switcher", default: true },
-  }
-}
+  fields: [
+    { name: "title", type: "text", required: true },
+    { name: "description", type: "text" },
+    { name: "price", type: "number", required: true },
+    { name: "available", type: "switcher", default: true },
+  ],
+};

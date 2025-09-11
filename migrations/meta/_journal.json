@@ -5,8 +5,15 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1757555036286,
-      "tag": "0000_real_puppet_master",
+      "when": 1757606059336,
+      "tag": "0000_fantastic_solo",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1757606602689,
+      "tag": "0001_red_kang",
       "breakpoints": true
     }
   ]

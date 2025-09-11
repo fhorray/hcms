@@ -1,6 +1,7 @@
 import { BuiltOpacaConfig } from '@/cms/types';
 import type { ReactNode } from 'react';
 import OpacaProvider from '../providers';
+import AdminLayoutView from './admin-layout-view';
 
 type Props = {
   config: BuiltOpacaConfig;
@@ -15,7 +16,9 @@ export function MakeRootLayout({ config, children }: Props) {
   return (
     <html lang={lang} suppressHydrationWarning={suppress}>
       <body className="min-h-screen bg-background text-foreground">
-        <OpacaProvider>{children}</OpacaProvider>
+        <OpacaProvider>
+          <AdminLayoutView>{children}</AdminLayoutView>
+        </OpacaProvider>
       </body>
     </html>
   );

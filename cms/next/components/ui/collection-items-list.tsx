@@ -38,6 +38,81 @@ import {
 import { useMemo } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import type { OpacaField } from '@/cms/types';
+
+// ---------------------------------------------
+// Helpers
+// ---------------------------------------------
+
+// Creates a nice label from a key path (e.g. "meta.excerpt" -> "Excerpt")
+function labelFromKeyPath(path: string) {
+  const last = path.split('.').pop() ?? path;
+  return last.charAt(0).toUpperCase() + last.slice(1).replaceAll('_', ' ');
+}
+
+// Gets deep value using dot-path (e.g., "meta.excerpt")
+function getDeep(obj: any, path: string) {
+  return path.split('.').reduce((acc, k) => (acc ? acc[k] : undefined), obj);
+}
+
+function isNumericKey(k: string) {
+  return /^\d+$/.test(k);
+}
+
+// Check for plain-object rows
+function isPlainObject(v: any): v is Record<string, unknown> {
+  return v !== null && typeof v === 'object' && !Array.isArray(v);
+}
+
+// Flattens schema fields into a list of column paths.
+// If a field is a row, we expose children as "parent.child" keys.
+function columnsFromSchema(fields?: OpacaField[]): string[] {
+  if (!fields?.length) return [];
+  const out: string[] = [];
+
+  const walk = (prefix: string | null, f: OpacaField) => {
+    const type = f.type as any;
+    const name = prefix ? `${prefix}.${f.name}` : f.name;
+
+    // Row container: expose children as columns
+    if (
+      type &&
+      typeof type === 'object' &&
+      'row' in type &&
+      Array.isArray(type.row)
+    ) {
+      for (const child of type.row as OpacaField[]) {
+        walk(name, child);
+      }
+      return;
+    }
+
+    out.push(name);
+  };
+
+  for (const f of fields) walk(null, f);
+  return out;
+}
+
+// Builds a stable, ordered column list based on schema first, then data keys.
+// We keep a single set to avoid duplicates.
+export function buildAllColumns(items: any[], fields?: OpacaField[]) {
+  const cols = new Set<string>();
+
+  // 1) schema-driven (stable order)
+  for (const c of columnsFromSchema(fields)) cols.add(c);
+
+  // 2) data-driven (skip arrays and numeric keys)
+  for (const row of items ?? []) {
+    if (!isPlainObject(row)) continue; // <-- ignore arrays and primitives
+    for (const k of Object.keys(row)) {
+      if (isNumericKey(k)) continue; // <-- ignore "0","1","2",...
+      cols.add(k);
+    }
+  }
+
+  return Array.from(cols);
+}
 
 // ---------------------------------------------
 // Filter component: Column visibility toggler
@@ -90,7 +165,7 @@ function ColumnFilter({ allColumns }: { allColumns: string[] }) {
             onCheckedChange={() => toggleColumn(col)}
             className="capitalize"
           >
-            {col.replaceAll('_', ' ')}
+            {labelFromKeyPath(col)}
           </DropdownMenuCheckboxItem>
         ))}
         <DropdownMenuSeparator />
@@ -122,22 +197,21 @@ function ColumnFilter({ allColumns }: { allColumns: string[] }) {
 // ---------------------------------------------
 type Props = {
   items: any[];
+  // NEW: pass collection schema to define/flatten columns (OpacaField[])
+  fields?: OpacaField[];
 };
 
-function CollectionItemsList({ items }: Props) {
-  const params = useParams();
-  const slug = params.collection;
+function CollectionItemsList({ items, fields }: Props) {
+  const params = useParams() as { paths?: string };
+  const slug = params.paths ?? 'items';
 
   const { viewMode, visibleColumns } = useStore($tableFilters);
 
-  // Lista de colunas: união das chaves de todos os itens
-  const allColumns = useMemo(() => {
-    const s = new Set<string>();
-    for (const row of (items ?? []) as any[]) {
-      Object.keys(row ?? {}).forEach((k) => s.add(k));
-    }
-    return Array.from(s);
-  }, [items]);
+  // Full column set: schema (flattened, incl. row children) + data keys
+  const allColumns = useMemo(
+    () => buildAllColumns(items, fields),
+    [items, fields],
+  );
 
   const isVisible = (key: string) => (visibleColumns?.[key] ?? true) === true;
 
@@ -204,8 +278,7 @@ function CollectionItemsList({ items }: Props) {
                 <TableRow>
                   {renderedColumns.map((key) => (
                     <TableHead key={key} className="font-medium">
-                      {key.charAt(0).toUpperCase() +
-                        key.slice(1).replaceAll('_', ' ')}
+                      {labelFromKeyPath(key)}
                     </TableHead>
                   ))}
                   <TableHead className="text-right">Actions</TableHead>
@@ -215,10 +288,13 @@ function CollectionItemsList({ items }: Props) {
                 {items.map((item, index) => (
                   <TableRow key={index} className="hover:bg-muted/50">
                     {renderedColumns.map((key) => {
-                      const value = (item as any)[key];
+                      const value = key.includes('.')
+                        ? getDeep(item, key)
+                        : (item as any)[key];
+
                       return (
                         <TableCell key={key} className="font-medium">
-                          {key === 'status' ? (
+                          {key.endsWith('status') || key === 'status' ? (
                             <Badge
                               variant={
                                 value === 'active' ? 'default' : 'secondary'
@@ -238,7 +314,8 @@ function CollectionItemsList({ items }: Props) {
                     })}
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <Link href={`/admin/users/${(item as any).id}`}>
+                        {/* FIX: use slug instead of hardcoded "users" */}
+                        <Link href={`/admin/${slug}/${(item as any).id}`}>
                           <Button
                             variant="ghost"
                             size="sm"
@@ -292,14 +369,16 @@ function CollectionItemsList({ items }: Props) {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {renderedColumns.map((key) => {
-                    const value = (item as any)[key];
+                    const value = key.includes('.')
+                      ? getDeep(item, key)
+                      : (item as any)[key];
+
                     return (
                       <div key={key} className="flex flex-col gap-1">
                         <span className="text-sm font-medium text-muted-foreground">
-                          {key.charAt(0).toUpperCase() +
-                            key.slice(1).replaceAll('_', ' ')}
+                          {labelFromKeyPath(key)}
                         </span>
-                        {key === 'status' ? (
+                        {key.endsWith('status') || key === 'status' ? (
                           <Badge
                             variant={
                               value === 'active' ? 'default' : 'secondary'

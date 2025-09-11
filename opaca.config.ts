@@ -12,7 +12,6 @@ export default buildOpacaConfig({
     suppressHydrationWarning: true,
   },
   auth: {
-    baseURL: process.env.OPACA_BASE_URL || "http://localhost:3000",
     emailAndPassword: {
       enabled: true
     },
@@ -22,10 +21,21 @@ export default buildOpacaConfig({
       //   clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
       // }
     },
-    plugins: [
-      // TODO pass plugins as object with booleans instead of array
-      // admin(),
-      // nextCookies()
-    ]
-  }
+    plugins: {
+      admin: {
+      },
+      apiKey: {
+        enabled: true,
+        name: "Default",
+        expiresIn: 60 * 60 * 24 * 30, // 30 days
+        prefix: "opaca_",
+        metadata: null,
+        permissions: {
+          // Give full access to all collections
+          collections: ["*"],
+        }
+      }
+    }
+  },
+
 })

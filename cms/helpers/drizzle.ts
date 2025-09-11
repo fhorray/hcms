@@ -1,16 +1,10 @@
 // Lightweight utility to turn an OpacaCollection into a Drizzle table
 // Works with Postgres (pg-core) and SQLite (sqlite-core).
-// Intentionally simple: handles the most common scalar types and a few conveniences.
-// You can extend the mappings as your schema grows.
-
 import type { OpacaCollection, OpacaField, FieldTypeInput } from "@/cms/types/dls";
 
-// ---- Dialect gates ---------------------------------------------------------
 import {
   pgTable,
-  serial as pgSerial,
   integer as pgInt,
-  real as pgReal,
   text as pgText,
   boolean as pgBool,
   timestamp as pgTs,
@@ -21,74 +15,61 @@ import {
 import {
   sqliteTable,
   integer as sqInt,
-  real as sqReal,
   text as sqText,
-  blob as sqBlob,
   index as sqIndex,
 } from "drizzle-orm/sqlite-core";
+
 import dotenv from "dotenv";
 import { slugify } from "@/lib/utils";
-dotenv.config({
-  path: ".dev.vars",
-});
+import { init } from "@paralleldrive/cuid2";
+dotenv.config({ path: ".dev.vars" });
 
 export type Dialect = "pg" | "sqlite";
 
-// ---- Public API ------------------------------------------------------------
-export function buildDrizzleTable(
-  collection: OpacaCollection,
-  dialect?: Dialect
-) {
-  return process.env.OPACA_DB_DIALECT === "d1" || process.env.OPACA_DB_DIALECT === "sqlite"
-    ? buildSqliteTable(collection)
-    : buildPgTable(collection)
+export function buildDrizzleTable(collection: OpacaCollection, dialect?: Dialect) {
+  const useSqlite = process.env.OPACA_DB_DIALECT === "d1" || process.env.OPACA_DB_DIALECT === "sqlite" || dialect === "sqlite";
+  return useSqlite ? buildSqliteTable(collection) : buildPgTable(collection);
 }
 
-// ----------------------------------------------------------------------------
-// PG IMPLEMENTATION
-// ----------------------------------------------------------------------------
+/* ----------------------------- PG IMPLEMENTATION ----------------------------- */
+
 function buildPgTable(collection: OpacaCollection) {
-  if (!collection) {
-    throw new Error("Collection is undefined");
-  }
-  const slug = collection.slug ?? slugify(pluralize(collection.name));
+  if (!collection) throw new Error("Collection is undefined");
+
+  const slug = slugify(pluralize(collection.name));
+  // Flatten first
+  const flatFields = flattenFields(collection.fields ?? []);
 
   const columns: Record<string, any> = {};
   const indexSpecs: Array<{ key: string; make: (t: any) => any }> = [];
 
-  const pkField = collection.primaryKey;
-  const hasCustomPk = pkField && collection.fields[pkField];
+  // Create "id" PK once
+  columns["id"] = pgText("id").primaryKey().$defaultFn(() => init({ length: 10 })());
 
-  if (!hasCustomPk) {
-    columns["id"] = pgSerial("id").primaryKey();
-  }
+  for (const f of flatFields) {
+    if (!f?.name) throw new Error(`Field without "name" in collection "${slug}"`);
 
-  for (const [fieldKey, raw] of Object.entries(collection.fields)) {
-    const f = normalizeField(raw);
+    // Avoid colliding with the auto "id" column
+    if (f.name === "id") continue;
 
-    // UI/structural types that don't map to columns (extend as needed)
-    if (isStructuralType(f.type)) continue;
+    const propertyKey = f.name;
+    const dbName = f.columnName ?? f.name;
 
-    const dbName = f.columnName ?? fieldKey;
-    const isPk = !!(hasCustomPk && pkField === fieldKey);
+    const col = makePgColumn(dbName, f);
+    if (!col) continue;
 
-    const col = makePgColumn(dbName, f, isPk);
-    if (!col) continue; // unsupported types silently skipped
-
-    // apply generic modifiers
-    let built = applyCommonColumnModifiers(col, f, isPk);
-
-    columns[fieldKey] = built;
+    const built = applyCommonColumnModifiers(col, f);
+    columns[propertyKey] = built;
 
     if (f.indexed) {
+      const idxName = `${slug}_${dbName}_idx`;
       indexSpecs.push({
-        key: `${slug}_${dbName}_idx`,
-        make: (t: any) => pgIndex(`${slug}_${dbName}_idx`).on(t[fieldKey]),
+        key: idxName,
+        make: (t: any) => pgIndex(idxName).on(t[propertyKey]),
       });
     }
   }
 
-  // Build table with optional index definitions
   const table = pgTable(slug, columns, (t) => {
     const idxObj: Record<string, any> = {};
     for (const spec of indexSpecs) idxObj[spec.key] = spec.make(t);
@@ -98,7 +79,7 @@ function buildPgTable(collection: OpacaCollection) {
   return table;
 }
 
-function makePgColumn(name: string, f: OpacaField, isPk: boolean) {
+function makePgColumn(name: string, f: OpacaField) {
   const t = f.type;
 
   if (typeof t === "string") {
@@ -109,7 +90,6 @@ function makePgColumn(name: string, f: OpacaField, isPk: boolean) {
       case "code":
       case "upload":
       case "email":
-      case "select":
       case "radio-group":
         return pgText(name);
       case "number":
@@ -122,67 +102,72 @@ function makePgColumn(name: string, f: OpacaField, isPk: boolean) {
       case "json":
         return pgJsonb(name);
       case "array":
-        return pgText(name).array(); // store as text[] (change to specific type if needed)
+        // Simple text[] for portability; change if you need arrays of specific types
+        return pgText(name).array();
       case "point":
-        // Keep it portable by storing as JSON text like { x, y } or { lat, lng }
-        return pgText(name).$type<{ x: number; y: number } | { lat: number; lng: number }>();
-      // Structural/unsupported here are filtered earlier
+        return pgJsonb(name).$type<{ x: number; y: number } | { lat: number; lng: number }>();
       default:
         return undefined;
     }
   }
 
-  // Object variants
+  // Relationship object
   if ("relationship" in t) {
     const rel = t.relationship;
     if (rel.many) {
-      // simple/portable: store array of FK IDs as jsonb
+      // Store array of FK IDs as jsonb
       return pgJsonb(name).$type<Array<string | number>>();
     }
-    // 1:1 or many:1 — store a single FK id (integer by default)
+    // Store single FK id as integer by default (customize as needed)
     return pgInt(name);
+  }
+
+  // Select object
+  if ("select" in t) {
+    // TODO Relationship logic
+    return pgJsonb(name).$type<{
+      options: { label: string; value: string | number }[];
+      multiple?: boolean;
+    }>();
   }
 
   return undefined;
 }
 
-// ----------------------------------------------------------------------------
-// SQLITE IMPLEMENTATION
-// ----------------------------------------------------------------------------
-function buildSqliteTable(collection: OpacaCollection) {
+/* --------------------------- SQLITE/D1 IMPLEMENTATION ------------------------ */
 
-  if (!collection) {
-    throw new Error("Collection is undefined");
-  }
+function buildSqliteTable(collection: OpacaCollection) {
+  if (!collection) throw new Error("Collection is undefined");
+
   const slug = collection.slug ?? slugify(pluralize(collection.name));
+  // Flatten first
+  const flatFields = flattenFields(collection.fields ?? []);
 
   const columns: Record<string, any> = {};
   const indexSpecs: Array<{ key: string; make: (t: any) => any }> = [];
 
-  const pkField = collection.primaryKey;
-  const hasCustomPk = pkField && collection.fields[pkField];
+  columns["id"] = sqText("id").primaryKey().$defaultFn(() => init({ length: 10 })());
 
-  if (!hasCustomPk) {
-    columns["id"] = sqInt("id", { mode: "number" }).primaryKey({ autoIncrement: true });
-  }
+  for (const f of flatFields) {
+    if (!f?.name) throw new Error(`Field without "name" in collection "${slug}"`);
 
-  for (const [fieldKey, raw] of Object.entries(collection.fields)) {
-    const f = normalizeField(raw);
-    if (isStructuralType(f.type)) continue;
+    // Avoid colliding with the auto "id" column
+    if (f.name === "id") continue;
 
-    const dbName = f.columnName ?? fieldKey;
-    const isPk = !!(hasCustomPk && pkField === fieldKey);
+    const propertyKey = f.name;
+    const dbName = f.columnName ?? slugify(f.name, { separator: "_" });
 
-    const col = makeSqliteColumn(dbName, f, isPk);
+    const col = makeSqliteColumn(dbName, f);
     if (!col) continue;
 
-    let built = applyCommonColumnModifiers(col, f, isPk);
-    columns[fieldKey] = built;
+    const built = applyCommonColumnModifiers(col, f);
+    columns[propertyKey] = built;
 
     if (f.indexed) {
+      const idxName = `${slug}_${dbName}_idx`;
       indexSpecs.push({
-        key: `${slug}_${dbName}_idx`,
-        make: (t: any) => sqIndex(`${slug}_${dbName}_idx`).on(t[fieldKey]),
+        key: idxName,
+        make: (t: any) => sqIndex(idxName).on(t[propertyKey]),
       });
     }
   }
@@ -196,7 +181,7 @@ function buildSqliteTable(collection: OpacaCollection) {
   return table;
 }
 
-function makeSqliteColumn(name: string, f: OpacaField, isPk: boolean) {
+function makeSqliteColumn(name: string, f: OpacaField) {
   const t = f.type;
 
   if (typeof t === "string") {
@@ -207,7 +192,6 @@ function makeSqliteColumn(name: string, f: OpacaField, isPk: boolean) {
       case "code":
       case "upload":
       case "email":
-      case "select":
       case "radio-group":
       case "point":
         return sqText(name);
@@ -217,11 +201,11 @@ function makeSqliteColumn(name: string, f: OpacaField, isPk: boolean) {
       case "switcher":
         return sqInt(name, { mode: "boolean" });
       case "date":
-        // store as unix epoch (seconds) — portable
+        // Store as unix epoch (seconds) for portability
         return sqInt(name, { mode: "timestamp" });
       case "json":
       case "array":
-        // store as JSON string; hydrate in app code
+        // Store as JSON string; hydrate in app code
         return sqText(name);
       default:
         return undefined;
@@ -240,76 +224,89 @@ function makeSqliteColumn(name: string, f: OpacaField, isPk: boolean) {
   return undefined;
 }
 
-// ----------------------------------------------------------------------------
-// HELPERS
-// ----------------------------------------------------------------------------
-function normalizeField(f: OpacaField | FieldTypeInput): OpacaField {
-  if (typeof f === "string") {
-    return { type: f };
-  }
-  // If it's already an OpacaField (has a 'type' property), return as is
-  if ("type" in f) {
-    return f as OpacaField;
-  }
-  // Otherwise, wrap the object as { type: f }
-  return { type: f };
-}
-
+/* --------------------------------- HELPERS ---------------------------------- */
 function isStructuralType(t: FieldTypeInput): boolean {
-  const structural = new Set([
-    "group",
-    "tabs",
-    "collapsible",
-    "blocks",
-    "row",
-    "ui",
-    "join", // This often implies a separate join table; handled outside this helper.
-  ]);
-  if (typeof t === "string") return structural.has(t);
-  return false; // enum / relationship are not structural here
+  // Only skip literal structural strings; objects are handled by flattenFields().
+  const structural = new Set(["group", "tabs", "collapsible", "blocks", "row", "ui", "join"]);
+  return typeof t === "string" && structural.has(t);
 }
 
-function applyCommonColumnModifiers<T extends any>(col: T, f: OpacaField, isPk: boolean): T {
+function applyCommonColumnModifiers<T>(col: T, f: OpacaField): T {
   let c: any = col;
+
   if (f.required && typeof c.notNull === "function") c = c.notNull();
   if (f.unique && typeof c.unique === "function") c = c.unique();
 
-  if (f.default !== undefined && typeof c.default === "function") {
-    // Allow string "now" for timestamp-ish columns
+  if (f.default !== undefined) {
     if (f.default === "now" && typeof c.defaultNow === "function") {
       c = c.defaultNow();
-    } else {
+    } else if (typeof c.default === "function") {
       c = c.default(f.default as any);
     }
   }
 
-  if (isPk && typeof c.primaryKey === "function") c = c.primaryKey();
-  return c;
+  if ((f as any).primaryKey === true && typeof c.primaryKey === "function") {
+    c = c.primaryKey();
+  }
+
+  return c as T;
 }
 
 function pluralize(s: string): string {
   const n = s.trim();
-  if (/s$/i.test(n)) return n; // naive but good enough for a default
+  if (/s$/i.test(n)) return n;
   return `${n}s`;
 }
 
-// ----------------------------------------------------------------------------
-// EXAMPLE
-// ----------------------------------------------------------------------------
-// const posts = buildDrizzleTable(
-//   {
-//     name: "Post",
-//     fields: {
-//       title: { type: "text", required: true, indexed: true },
-//       body: "rich-text",
-//       published: { type: "checkbox", default: false, indexed: true },
-//       createdAt: { type: "date", default: "now" },
-//       authorId: { type: { relationship: { to: "users" } }, indexed: true },
-//       tags: "array",
-//       kind: { type: { enum: ["draft", "post", "note"] }, default: "draft" },
-//     },
-//   },
-//   "pg"
-// );
-//
-// export { posts };
+function flattenFields(fields: OpacaField[], prefix = ""): OpacaField[] {
+  const out: OpacaField[] = [];
+
+  for (const f of fields) {
+    const t: any = f.type;
+
+    // Handle structural containers and recurse into children:
+    if (t && typeof t === "object") {
+      // row: [{...}, {...}]
+      if (Array.isArray(t.row)) {
+        out.push(...flattenFields(t.row as OpacaField[], prefix));
+        continue;
+      }
+      // generic "fields" container: { fields: [...] }
+      if (Array.isArray(t.fields)) {
+        out.push(...flattenFields(t.fields as OpacaField[], prefix));
+        continue;
+      }
+      // tabs: [{ name, fields: [...] }, ...]
+      if (Array.isArray(t.tabs)) {
+        for (const tab of t.tabs) {
+          if (Array.isArray(tab?.fields)) {
+            out.push(...flattenFields(tab.fields as OpacaField[], prefix));
+          }
+        }
+        continue;
+      }
+      // blocks: [{ slug, fields: [...] }, ...]
+      if (Array.isArray(t.blocks)) {
+        for (const block of t.blocks) {
+          if (Array.isArray(block?.fields)) {
+            out.push(...flattenFields(block.fields as OpacaField[], prefix));
+          }
+        }
+        continue;
+      }
+    }
+
+    // Leaf field: preserve as a real column candidate.
+    // Optional: if you want a name prefix coming from container, set columnName here.
+    if (prefix) {
+      out.push({
+        ...f,
+        columnName: f.columnName ?? `${prefix}${f.name}`,
+      });
+    } else {
+      out.push(f);
+    }
+  }
+
+  return out;
+}
