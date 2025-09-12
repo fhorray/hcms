@@ -1,5 +1,5 @@
 import collections from '@/collections';
-import { OpacaCollection, OpacaField } from '@/cms/types';
+import { OpacaCollection, OpacaField } from '@opaca/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useOpaca } from '@/cms/hooks';
+import { useOpaca } from '@opaca/client/hooks';
 import { useAppForm } from '@/components/form/form-context';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

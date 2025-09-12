@@ -1,4 +1,4 @@
-import { OpacaCollection } from '@/cms/types';
+import { OpacaCollection } from '@opaca/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {

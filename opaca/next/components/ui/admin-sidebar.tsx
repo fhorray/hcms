@@ -1,6 +1,6 @@
 'use client';
 
-import { useOpaca } from '@/cms/hooks';
+import { useOpaca } from '@opaca/client/hooks';
 import collections from '@/collections';
 import {
   Sidebar,

@@ -1,4 +1,4 @@
-import { BuiltOpacaConfig } from '@/cms/types';
+import { BuiltOpacaConfig } from '@opaca/types';
 import type { ReactNode } from 'react';
 import OpacaProvider from '../providers';
 

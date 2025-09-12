@@ -1,11 +1,10 @@
 'use client';
 
 import { slugify } from '@/lib/utils';
+import { OpacaCollection } from '@/opaca/types/config';
 import config from '@opaca-config';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
-import { OpacaCollection } from '../types';
-import * as schema from '../server/db/schema';
 
 export const useOpaca = () => {
   const qc = useQueryClient();

@@ -3,8 +3,8 @@
 import React from 'react';
 
 import { SidebarProvider } from '@/components/ui/sidebar';
-import AdminSidebar from '@/cms/next/components/ui/admin-sidebar';
-import AdminHeader from '@/cms/next/components/ui/admin-header';
+import AdminSidebar from '@opaca/next/components/ui/admin-sidebar';
+import AdminHeader from '@opaca/next/components/ui/admin-header';
 
 interface CMSLayoutProps {
   children: React.ReactNode;

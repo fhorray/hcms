@@ -1,6 +1,6 @@
 'use client';
 
-import type { FieldTypeInput, OpacaField } from '@/cms/types';
+import type { FieldTypeInput, OpacaField } from '@opaca/types';
 import { withForm } from '@/components/form/form-context';
 
 type NormalizedField =

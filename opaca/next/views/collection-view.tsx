@@ -10,10 +10,10 @@ import {
 } from '@/components/ui/card';
 import { ArrowLeft, Database, Link } from 'lucide-react';
 
-import { useOpaca } from '@/cms/hooks';
+import { useOpaca } from '@opaca/client/hooks';
 
 import { useParams } from 'next/navigation';
-import { OpacaCollection } from '@/cms/types';
+import { OpacaCollection } from '@opaca/types';
 import CollectionHeader from '../components/ui/collection-header';
 import CollectionItemsList from '../components/ui/collection-items-list';
 import { useRouter } from 'next/router';

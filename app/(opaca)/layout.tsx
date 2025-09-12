@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import config from '@opaca-config';
-import { MakeRootLayout } from '@/cms/next/views';
-import '@/cms/next/styles.css';
+import { MakeRootLayout } from '@opaca/next/views';
+import '@opaca/next/styles.css';
 
 export const dynamic = 'force-dynamic'; // Admin should not be statically generated
 

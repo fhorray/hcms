@@ -3,7 +3,6 @@ import { D1Adapter } from "@/opaca/db/adapters/d1";
 import { defineOpacaConfig } from "@opaca/config";
 import collections from "./collections";
 import { OpacaPluginManifest } from "./opaca/plugin-api/types";
-import ExampleField from "./example-field";
 
 
 // PLUGIN EXAMPLE
@@ -27,12 +26,12 @@ const LocalRoutes = (opts: { basePath?: string } = {}): OpacaPluginManifest => {
 
     // Sync-only hooks for your strict sync loader
     setup(ctx) {
-      ctx.registries.fields.register({
-        name: "example",
-        schema: { kind: "string" },
-        renderAdmin: ExampleField,
-        sanitize: (v) => (v == null ? "" : String(v)),
-      });
+      // ctx.registries.fields.register({
+      //   name: "example",
+      //   schema: { kind: "string" },
+      //   renderAdmin: ExampleField,
+      //   sanitize: (v) => (v == null ? "" : String(v)),
+      // });
 
       // --- Register a GET route under the plugin base path ---
       ctx.registries.routes.register({

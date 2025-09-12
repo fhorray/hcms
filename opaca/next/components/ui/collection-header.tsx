@@ -1,4 +1,4 @@
-import { OpacaCollection } from '@/cms/types';
+import { OpacaCollection } from '@opaca/types';
 import { Button } from '@/components/ui/button';
 import { ArrowLeftIcon, PlusIcon, SettingsIcon } from 'lucide-react';
 import Link from 'next/link';

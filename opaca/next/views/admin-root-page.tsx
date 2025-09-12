@@ -1,4 +1,4 @@
-import { OpacaCollection, OpacaConfig } from '@/cms/types';
+import { OpacaCollection, OpacaConfig } from '@opaca/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Database, FileText, Settings, TrendingUp } from 'lucide-react';
 import CollectionCard from '../components/ui/collection-card';

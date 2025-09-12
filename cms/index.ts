@@ -1,6 +1,0 @@
-export { buildOpacaConfig } from "./config"
-export * from "./client/crud"
-export * from "./helpers/drizzle"
-export * from "./helpers/gen-schema"
-export * from "./hooks"
-export * from "./next/components"
