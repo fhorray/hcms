@@ -1,6 +1,5 @@
 import type { Table } from "drizzle-orm";
 
-
 /** Guard to detect a Drizzle table object (SQLite, D1, PG). */
 export function isDrizzleTable(x: unknown): x is Table {
   if (!x || typeof x !== "object") return false;

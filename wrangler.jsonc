@@ -25,7 +25,7 @@
 			"database_name": "hcms",
 			"database_id": "825b25ae-1a9d-46e4-b4a7-269f3f41f39e",
 			"migrations_dir": "./server/db/migrations",
-			"experimental_remote": true
+			"remote": true
 		}
 	]
 	/**

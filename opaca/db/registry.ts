@@ -1,7 +1,4 @@
-// cms/db/registry.ts
-// Comments in English only.
-
-import type { OpacaDbAdapter } from "./adapter";
+import type { OpacaDbAdapter } from "./types";
 
 export type AdapterSpec =
   | { kind: "pg"; options: Record<string, any> }
@@ -19,8 +16,8 @@ export async function loadAdapter(spec: AdapterSpec): Promise<OpacaDbAdapter> {
     //   return createSqliteAdapter(spec.options);
     // }
     case "d1": {
-      const { createD1Adapter } = await import("@/opaca/db/adapters/d1");
-      return createD1Adapter(spec.options);
+      const { D1Adapter } = await import("@/opaca/db/adapters/d1");
+      return D1Adapter(spec.options);
     }
     default:
       throw new Error(`Unknown adapter: ${(spec as any)?.kind}`);

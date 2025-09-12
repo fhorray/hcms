@@ -2,7 +2,6 @@ import { OpacaCollection } from "@opaca/types/config";
 
 export const Products: OpacaCollection = {
   name: "Products",
-  slug: "products",
   icon: "ShoppingCartIcon",
   fields: [
     { name: "title", type: "textarea", required: true, indexed: true },

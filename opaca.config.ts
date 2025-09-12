@@ -12,10 +12,10 @@ export default defineOpacaConfig({
     }),
   },
   admin: {
-    appName: "My Opaca CMS",
+    appName: "Opaca CMS",
     appDescription: "An example Opaca CMS project",
     appLang: "en",
-    avatar: "gravatar",
+    avatar: "dicebar",
     dateFormat: "DD/MM/YYYY",
   }
 });

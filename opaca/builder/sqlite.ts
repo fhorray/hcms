@@ -12,22 +12,30 @@ import {
 export function buildSqliteTable(collection: OpacaCollection) {
   if (!collection) throw new Error("Collection is undefined");
 
-  const slug = (collection.slug ?? slugify(pluralize(collection.name))).toLowerCase();
+  const slug = slugify(pluralize(collection.name)).toLowerCase()
 
   const flatFields = flattenFields(collection.fields ?? []);
 
   const columns: Record<string, any> = {};
   const indexSpecs: Array<{ key: string; make: (t: any) => any }> = [];
 
+  // Create default columns (id, created at, updated at etc...)
   columns["id"] = sqText("id")
     .primaryKey()
-    .$defaultFn(() => createId(15));
+    .$defaultFn(() => createId(15))
+    .notNull();
+  columns["createdAt"] = sqInt("created_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date());
+  columns["updatedAt"] = sqInt("updated_at", { mode: "timestamp" })
+    .$defaultFn(() => new Date()).$onUpdateFn(() => new Date());
 
   for (const f of flatFields) {
     if (!("name" in f) || !f?.name) {
       throw new Error(`Field without "name" in collection "${slug}"`);
     }
-    if (f.name === "id") continue;
+
+    // Skip default columns
+    if (f.name === "id" || f.name === "createdAt" || f.name === "updatedAt") continue;
 
     const propertyKey = f.name;
     const dbName = (f.columnName ?? slugify(f.name, { separator: "_" })).toLowerCase();
@@ -94,9 +102,9 @@ function makeSqliteColumn(name: string, f: OpacaField) {
         return sqInt(name, { mode: "timestamp" });
 
       case "json":
+        return sqText(name, { mode: "json" }).$type<Record<string, any>>().default({});
       case "array":
-        // Store JSON as string; app code parses/stringifies
-        return sqText(name);
+        return sqText(name, { mode: "json" }).$type<any[]>().default([]);
 
       // Structural-only types
       case "group":

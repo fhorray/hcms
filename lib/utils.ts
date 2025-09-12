@@ -40,12 +40,27 @@ export const captalize = (s: string) => {
 
 export function pluralize(s: string): string {
   if (!s) return s;
-  // Simple pluralization rules
-  if (s.endsWith("y") && !/[aeiou]y$/i.test(s)) {
-    return s.slice(0, -1) + "ies"; // e.g., "Category" -> "Categories"
-  } else if (s.endsWith("s") || s.endsWith("x") || s.endsWith("z") || s.endsWith("ch") || s.endsWith("sh")) {
-    return s + "es"; // e.g., "Box" -> "Boxes"
-  } else {
-    return s + "s"; // e.g., "Post" -> "Posts"
+
+  // Already plural (simple heuristic)
+  if (s.endsWith("s") && !s.endsWith("ss")) {
+    return s; // e.g., "products" stays "products"
   }
+
+  // Words ending in "y" preceded by consonant → "ies"
+  if (s.endsWith("y") && !/[aeiou]y$/i.test(s)) {
+    return s.slice(0, -1) + "ies"; // Category -> Categories
+  }
+
+  // Words ending in sibilant sounds → add "es"
+  if (/(s|x|z|ch|sh)$/.test(s)) {
+    return s + "es"; // Box -> Boxes, Match -> Matches
+  }
+
+  // Default case → add "s"
+  return s + "s"; // Post -> Posts
+}
+
+export const pascalize = (s: string) => {
+  return s
+    .replace(/(^\w|[-_]\w)/g, (m) => m.replace(/[-_]/, "").toUpperCase());
 }

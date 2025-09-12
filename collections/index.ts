@@ -2,10 +2,12 @@ import { Posts } from "./posts";
 import { Products } from "./products";
 import { Properties } from "./properties";
 import { Users } from "./users";
+import { Logs } from "./logs";
 
 export default [
   Posts,
   Products,
   Users,
-  Properties
+  Properties,
+  Logs
 ];

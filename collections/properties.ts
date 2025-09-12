@@ -2,7 +2,6 @@ import { OpacaCollection } from "@opaca/types/config";
 
 export const Properties: OpacaCollection = {
   name: "Properties",
-  slug: "properties",
   fields: [
     { name: "title", type: "text", required: true },
     { name: "description", type: "text" },

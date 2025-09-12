@@ -16,7 +16,7 @@ import {
 export function buildPgTable(collection: OpacaCollection) {
   if (!collection) throw new Error("Collection is undefined");
 
-  const slug = (collection.slug ?? slugify(pluralize(collection.name))).toLowerCase();
+  const slug = slugify(pluralize(collection.name)).toLowerCase();
 
   // Flatten first (rows/tabs/groups/blocks become leaf fields)
   const flatFields = flattenFields(collection.fields);
@@ -27,7 +27,14 @@ export function buildPgTable(collection: OpacaCollection) {
   // Create "id" PK once (cuid string)
   columns["id"] = pgText("id")
     .primaryKey()
-    .$defaultFn(() => createId(15));
+    .$defaultFn(() => createId(15))
+    .notNull();
+  columns["createdAt"] = pgTs("created_at", { mode: "date" })
+    .default(new Date())
+  columns["updatedAt"] = pgTs("updated_at", { mode: "date" })
+    .default(new Date())
+    .$onUpdateFn(() => new Date());
+
 
   for (const f of flatFields) {
     if (!("name" in f) || !f?.name) {

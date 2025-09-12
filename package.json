@@ -1,27 +1,30 @@
 {
-  "name": "headless-cms",
+  "name": "opaca-cms",
   "version": "0.1.0",
   "private": true,
+  "bin": {
+    "opaca": "bun ./opaca/bin/opaca.ts"
+  },
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
-    "auth:generate": "bunx @better-auth/cli generate --output=./server/schema/auth.ts",
-    "gen": "bun cms/helpers/gen-schema.ts && drizzle-kit generate --config=./cms/drizzle.config.ts",
-    "up": "drizzle-kit migrate --config=./cms/drizzle.config.ts",
-    "drop": "drizzle-kit drop --config=./cms/drizzle.config.ts",
-    "studio": "drizzle-kit studio --port 3000 --verbose",
-    "ngrok": "ngrok http --url=refined-primarily-falcon.ngrok-free.app 3000",
-    "gen:auth": "bunx @better-auth/cli@latest generate --config ./cms/auth/index.ts --yes",
+    "next:dev": "next dev --turbopack",
+    "next:build": "next build",
+    "next:start": "next start",
+    "next:lint": "next lint",
+    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "cf:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "cf:typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
+    "db:gen": "drizzle-kit generate --config=./opaca/drizzle.config.ts",
+    "db:up": "drizzle-kit migrate --config=./opaca/drizzle.config.ts",
+    "db:drop": "drizzle-kit drop --config=./opaca/drizzle.config.ts",
+    "db:studio": "drizzle-kit studio --port 3000 --verbose",
     "opaca:build": "bun opaca/cli/build-schema.ts",
-    "opaca:watch": "chokidar 'opaca.config.*' 'cms/**/builder/**' -c 'bun run opaca:build'"
+    "opaca:watch": "chokidar 'opaca.config.*' 'collections/**' -c 'bun run opaca:build'",
+    "opaca:dev": "concurrently -n next:dev,opaca \"next dev --turbopack\" \"bun run opaca:watch\"",
+    "dev": "concurrently -n next:dev,opaca \"next dev --turbopack\" \"bun run opaca:watch\""
   },
   "dependencies": {
     "@emoji-mart/react": "^1.1.1",
+    "@hono/graphql-server": "^0.7.0",
     "@hookform/resolvers": "^5.2.1",
     "@nanostores/i18n": "^1.2.2",
     "@nanostores/persistent": "^1.1.0",
@@ -94,7 +97,7 @@
     "drizzle-orm": "^0.44.5",
     "drizzle-zod": "^0.8.3",
     "embla-carousel-react": "^8.6.0",
-    "hono": "^4.9.6",
+    "hono": "^4.9.7",
     "html-react-parser": "^5.2.6",
     "input-otp": "^1.4.2",
     "kysely": "^0.28.5",
@@ -105,7 +108,6 @@
     "next-themes": "^0.4.6",
     "nuqs": "^2.6.0",
     "pg": "^8.16.3",
-    "pluralize": "^8.0.0",
     "postgres": "^3.4.7",
     "react": "19.1.0",
     "react-day-picker": "^9.9.0",
@@ -131,6 +133,6 @@
     "tailwindcss": "^4.1.13",
     "tw-animate-css": "^1.3.8",
     "typescript": "^5.9.2",
-    "wrangler": "^4.35.0"
+    "wrangler": "^4.36.0"
   }
 }

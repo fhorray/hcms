@@ -16,7 +16,7 @@ export function sanitize(rawConfig: OpacaConfig): OpacaBuiltConfig {
         throw new Error(`Collection[${idx}] is missing 'name'.`);
       }
 
-      const slug = (raw.slug ?? slugify(name)).toString().trim();
+      const slug = slugify(name).toString().trim();
       if (!slug) {
         throw new Error(`Collection[${idx}] produced an empty 'slug'.`);
       }

@@ -1,9 +1,11 @@
-import type * as TSchema from "@/schema";
+
 import { BetterAuthOptions } from 'better-auth';
 import * as Lucide from 'lucide-react';
 import { LucideIcon } from "lucide-react";
-import { OpacaDbAdapter } from "../db/adapter";
+import { OpacaDbAdapter } from "@opaca/db/types";
 
+// TODO: fix this import, to avoid circular dependency & dinamically import it somwhow
+import type * as TSchema from "@/schema";
 
 // List of lucide icon component names
 export type LucideIconName = {
@@ -83,16 +85,16 @@ export type OpacaRowField = {
   layout?: { col?: number };
 };
 
-// União final
 export type OpacaField = OpacaBaseField | OpacaRowField;
 
 export type OpacaCollection = {
   name: string;               // "Posts"
-  slug?: string; // default: slugify(plural(name)) -> "posts"
-  icon?: LucideIconName; // default: "Collection" icon
+  icon?: LucideIconName;      // default: "Collection" icon
   fields: OpacaField[];
   required?: boolean;
   hidden?: boolean;
+  rest?: boolean;         // default false
+  orderBy?: { column: string; direction?: "asc" | "desc" };
 };
 
 export type OpacaConfig = {
@@ -165,7 +167,7 @@ export type BuiltField = Omit<OpacaBaseField, 'type' | 'columnName'> & {
 };
 
 // Relationship registry item
-export type BuiltRelation = {
+export type OpacaBuiltRelation = {
   from: { collection: string; field: string; path: `${string}.${string}` };
   to: { collection: keyof typeof TSchema; via?: string; many?: boolean };
   kind: 'relationship' | 'select.relationship';
@@ -194,8 +196,8 @@ export type OpacaBuiltConfig = Omit<OpacaConfig, "collections"> & {
 
   // Relationships discovered (relationship + select.relationship)
   _relationships: {
-    list: BuiltRelation[];
-    byTarget: Record<string, BuiltRelation[]>;      // target table -> relations[]
+    list: OpacaBuiltRelation[];
+    byTarget: Record<string, OpacaBuiltRelation[]>;      // target table -> relations[]
   };
 
   // Select enum options and relationship-backed selects

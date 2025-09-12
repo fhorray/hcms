@@ -1,6 +1,7 @@
 import { drizzle } from "drizzle-orm/d1";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
-import type { OpacaDbAdapter, DrizzleLikeDatabase } from "@opaca/db/adapter";
+import type { OpacaDbAdapter, DrizzleLikeDatabase } from "@opaca/db/types";
+import * as schema from "@/schema";
 
 export type D1AdapterOptions = {
   devMode?: boolean;          // true: use getCloudflareContext() sync (only in development)
@@ -9,7 +10,7 @@ export type D1AdapterOptions = {
 
 // Lazy-load schema to avoid import cycles during schema build.
 let __schemaModule: any | null = null;
-async function loadSchema() {
+async function loadSchema(): Promise<typeof schema> {
   if (__schemaModule) return __schemaModule;
   // IMPORTANT: dynamic import prevents ESM TDZ when opaca.config.ts is being evaluated
   __schemaModule = await import("@/schema");
@@ -58,5 +59,6 @@ export function D1Adapter(opts: D1AdapterOptions = {}): OpacaDbAdapter {
       throw new Error("getDb() can only be called in devMode or with a binding. Use getDbAsync() otherwise.");
     },
     getDbAsync,
+    getLoadedSchema: async () => await loadSchema()
   };
 }

@@ -3,6 +3,7 @@ import { OpacaCollection } from "@opaca/types/config";
 export const Users: OpacaCollection = {
   name: "Users",
   icon: "UserIcon",
+  rest: true,
   fields: [
     {
       type: {
