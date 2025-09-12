@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import config from '@opaca-config';
 import { importMap } from '../imports-map';
-import { generateAdminMetadata, OpacaRootPage } from '@/cms/next';
+import { generateAdminMetadata, OpacaRootPage } from '@/opaca/next';
 
 type Args = {
   params: Promise<{ paths?: string[]; segments?: string[] }>;

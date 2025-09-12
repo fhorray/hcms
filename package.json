@@ -127,6 +127,7 @@
     "@types/node": "^24.3.1",
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.9",
+    "@types/semver": "^7.7.1",
     "chokidar-cli": "^3.0.0",
     "concurrently": "^9.2.1",
     "drizzle-kit": "^0.31.4",

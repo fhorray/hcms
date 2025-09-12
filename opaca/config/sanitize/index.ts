@@ -1,4 +1,4 @@
-import { BuiltField, OpacaBuiltConfig, BuiltRelation, LucideIconName, OpacaBaseField, OpacaCollection, OpacaConfig, OpacaField, OpacaRelatioshipFieldType, OpacaSelectFieldType } from "@/opaca/types/config";
+import { BuiltField, OpacaBuiltConfig, OpacaBuiltRelation, LucideIconName, OpacaBaseField, OpacaCollection, OpacaConfig, OpacaField, OpacaRelatioshipFieldType, OpacaSelectFieldType } from "@/opaca/types/config";
 import { DEFAULT_ICON, isObject, isRelationshipType, isRowType, isSelectType, toColumnName } from "./utils";
 import { slugify } from "@/lib/utils";
 
@@ -81,8 +81,8 @@ export function sanitize(rawConfig: OpacaConfig): OpacaBuiltConfig {
   > = {};
 
   // relationships registry
-  const relationships: BuiltRelation[] = [];
-  const relsByTarget: Record<string, BuiltRelation[]> = {};
+  const relationships: OpacaBuiltRelation[] = [];
+  const relsByTarget: Record<string, OpacaBuiltRelation[]> = {};
 
   // Build a schema map of all collection slugs for validation
   const schema: Record<string, boolean> = {};
@@ -158,7 +158,7 @@ export function sanitize(rawConfig: OpacaConfig): OpacaBuiltConfig {
         built.isRelation = true;
         built.relation = rel;
 
-        const item: BuiltRelation = {
+        const item: OpacaBuiltRelation = {
           from: { collection: col.slug, field: fname, path },
           to: {
             collection: rel.to,
@@ -196,7 +196,7 @@ export function sanitize(rawConfig: OpacaConfig): OpacaBuiltConfig {
           built.isRelation = true;
           built.relation = relationship;
 
-          const item: BuiltRelation = {
+          const item: OpacaBuiltRelation = {
             from: { collection: col.slug, field: fname, path },
             to: { collection: relationship.to, many: undefined, via: undefined },
             kind: "select.relationship",
@@ -253,6 +253,16 @@ export function sanitize(rawConfig: OpacaConfig): OpacaBuiltConfig {
     _selects: {
       optionsByPath: selectsOptionsByPath,
       relationshipByPath: selectsRelationshipByPath,
+    },
+
+    plugins: rawConfig.plugins ?? [],
+    _registries: {
+      db: [],
+      fields: [],
+      routes: [],
+      actions: [],
+      ui: [],
+      pipeline: [],
     },
   };
 

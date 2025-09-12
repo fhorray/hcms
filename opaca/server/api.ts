@@ -1,21 +1,16 @@
 
-import { Hono } from "hono";
-import type { OpacaDbAdapter } from "@/opaca/db/types";
-import * as schema from "@/schema";
-import type { Table } from "drizzle-orm";
-import { eq } from "drizzle-orm";
-import { isDrizzleTable, parseId, resolveResult } from "./helpers";
-import { UniversalDb } from "../db/types";
-import config from "@/opaca.config";
-import { Variables } from "../types/hono";
-import { makeRepo } from "../services/make-repo";
 import { slugify } from "@/lib/utils";
-import { mountRest } from "./mount-rest";
-import { buildSDL } from "./graphql/helpers";
-import { buildSchema } from "graphql";
-import { makeRoot } from "./make-root";
-import { appRouterContext } from "next/dist/server/route-modules/app-route/shared-modules";
+import config from "@/opaca.config";
+import type { OpacaDbAdapter } from "@/opaca/db/types";
 import { graphqlServer } from "@hono/graphql-server";
+import { buildSchema } from "graphql";
+import { Hono } from "hono";
+import { makeRepo } from "../services/make-repo";
+import { Variables } from "../types/hono";
+import { buildSDL } from "./graphql/helpers";
+import { makeRoot } from "./make-root";
+import { mountPluginsRest } from "./mount-plugins";
+import { mountRest } from "./mount-rest";
 
 export function buildOpacaApi(adapter: OpacaDbAdapter) {
   const api = new Hono<{
@@ -51,6 +46,7 @@ export function buildOpacaApi(adapter: OpacaDbAdapter) {
 
   // Mount REST API if enabled on any collection
   mountRest(api, Object.values(config.collections));
+  mountPluginsRest(api, config);
 
   // GraphQL endpoints
   const sdl = buildSDL(Object.values(config.collections));

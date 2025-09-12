@@ -6,6 +6,7 @@ import { OpacaDbAdapter } from "@opaca/db/types";
 
 // TODO: fix this import, to avoid circular dependency & dinamically import it somwhow
 import type * as TSchema from "@/schema";
+import { OpacaPluginManifest } from '../plugin-api/types';
 
 // List of lucide icon component names
 export type LucideIconName = {
@@ -147,6 +148,7 @@ export type OpacaConfig = {
 
     }
   };
+  plugins?: OpacaPluginManifest[]
 };
 
 
@@ -208,4 +210,22 @@ export type OpacaBuiltConfig = Omit<OpacaConfig, "collections"> & {
       OpacaSelectFieldType['select']['relationship'] | undefined
     >;
   };
+
+  plugins: (OpacaPluginManifest | string)[];
+  _registries: {
+    db: any[];
+    fields: any[];
+    routes: any[];
+    actions: any[];
+    ui: any[];
+    pipeline: any[];
+  };
+
+  runtime?: {
+    fields:
+    {
+      get: (n: string) => { name: string; } | undefined; list: () => { name: string; }[];
+      has: (n: string) => boolean;
+    } | undefined;
+  }
 };
