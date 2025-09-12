@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import * as config from '@opaca-config';
 import { importMap } from '../imports-map';
 import { generateAdminMetadata, OpacaRootPage } from '@/opaca/client/next';
+import { OpacaBuiltConfig } from '@/opaca/types/config';
 
 type Args = {
   params: Promise<{ paths?: string[]; segments?: string[] }>;
@@ -11,12 +12,19 @@ type Args = {
 export const dynamic = 'force-dynamic';
 export const dynamicParams = true;
 
-const { serverConfig } = config;
+const { clientConfig } = config;
 
 export function generateMetadata(args: Args): Promise<Metadata> {
-  return generateAdminMetadata({ config: serverConfig, ...args });
+  return generateAdminMetadata({
+    config: clientConfig as OpacaBuiltConfig,
+    ...args,
+  });
 }
 
 export default function Page(args: Args) {
-  return OpacaRootPage({ config: serverConfig, importMap, ...args });
+  return OpacaRootPage({
+    config: clientConfig as OpacaBuiltConfig,
+    importMap,
+    ...args,
+  });
 }

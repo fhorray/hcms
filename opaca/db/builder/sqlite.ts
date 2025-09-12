@@ -1,5 +1,5 @@
 import { pluralize, slugify } from "@/lib/utils";
-import { FieldTypeInput, OpacaCollection, OpacaField } from "../types/config";
+import { FieldTypeInput, OpacaCollection, OpacaField } from "../../types/config";
 import { applyCommonColumnModifiers, createId, flattenFields, peekOptionValueType } from "./helpers";
 
 import {

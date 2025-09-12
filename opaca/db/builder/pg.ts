@@ -1,6 +1,6 @@
 import { pluralize, slugify } from "@/lib/utils";
 import { OpacaBaseField, OpacaCollection } from "@opaca/types/config";
-import { applyCommonColumnModifiers, createId, flattenFields, peekOptionValueType } from "@opaca/builder/helpers";
+import { applyCommonColumnModifiers, createId, flattenFields, peekOptionValueType } from "@/opaca/db/builder/helpers";
 import dotenv from "dotenv";
 
 import {

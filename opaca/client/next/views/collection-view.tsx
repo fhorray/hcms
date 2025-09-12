@@ -28,7 +28,7 @@ export default function CollectionPage() {
     collections: { current },
   } = useOpaca();
 
-  const collectionItems = api.list.data as OpacaCollection[];
+  const collectionItems = api.list.data?.data;
 
   if (!current) {
     return (

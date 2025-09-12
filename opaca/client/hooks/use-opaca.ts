@@ -1,6 +1,7 @@
 'use client';
 
 import { slugify } from '@/lib/utils';
+import { OpacaApiResponse } from '@/opaca/server/mount-rest';
 import { OpacaCollection } from '@/opaca/types/config';
 import * as config from '@opaca-config';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -32,7 +33,8 @@ export const useOpaca = () => {
       queryKey: ['opaca', 'list', collection.slug],
       queryFn: async () => {
         const res = await fetch(`/api/${collection.slug}`);
-        return res.json();
+        const data = await res.json() as OpacaApiResponse<any[]>
+        return data;
       },
       enabled: !!collection.slug,
     }),
@@ -43,7 +45,8 @@ export const useOpaca = () => {
       queryFn: async () => {
         if (!itemId) return null;
         const res = await fetch(`/api/${collection.slug}/${itemId}`);
-        return res.json();
+        const data = await res.json() as OpacaApiResponse<any>
+        return data;
       },
       enabled: !!itemId,
     }),
@@ -56,7 +59,8 @@ export const useOpaca = () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
         });
-        return res.json();
+        const resData = await res.json() as OpacaApiResponse<any>
+        return resData;
       },
       onSuccess: () => {
         // invalidate list so UI refetches automatically
@@ -78,7 +82,8 @@ export const useOpaca = () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
         });
-        return res.json();
+        const resData = await res.json() as OpacaApiResponse<any>
+        return resData;
       },
       onSuccess: () => {
         qc.invalidateQueries({ queryKey: ['opaca', 'list', collection.slug] });
@@ -100,7 +105,8 @@ export const useOpaca = () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
         });
-        return res.json();
+        const resData = await res.json() as OpacaApiResponse<any>
+        return resData;
       },
       onSuccess: () => {
         qc.invalidateQueries({ queryKey: ['opaca', 'list', collection.slug] });
@@ -114,7 +120,8 @@ export const useOpaca = () => {
         const res = await fetch(`/api/${collection.slug}/${id}`, {
           method: 'DELETE',
         });
-        return res.json();
+        const data = await res.json() as OpacaApiResponse<any>
+        return data;
       },
       onSuccess: () => {
         qc.invalidateQueries({ queryKey: ['opaca', 'list', collection.slug] });

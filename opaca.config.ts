@@ -44,8 +44,7 @@ const LocalRoutes = (opts: { basePath?: string } = {}): OpacaPluginManifest => {
   };
 };
 
-
-export const serverConfig = defineOpacaConfig({
+const serverConfig = defineOpacaConfig({
   collections,
   database: {
     dialect: "d1",
@@ -71,5 +70,7 @@ export const clientConfig = {
   _index: serverConfig._index,
 };
 
+
+export default serverConfig;
 
 

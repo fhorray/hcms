@@ -1,5 +1,6 @@
-import { slugify } from "@/lib/utils";
+
 import config from "@/opaca.config";
+import { slugify } from "@/lib/utils";
 import type { OpacaDbAdapter } from "@/opaca/db/types";
 import { graphqlServer } from "@hono/graphql-server";
 import { buildSchema } from "graphql";

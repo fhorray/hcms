@@ -1,9 +1,9 @@
 // packages/opaca-next-admin/src/index.tsx
 // Comments in English only.
 
+import { OpacaBuiltConfig } from '@/opaca/types/config';
 import type { Metadata } from 'next';
 import type { ComponentType } from 'react';
-import { OpacaBuiltConfig } from '@opaca/types/config';
 
 /** Map of route keys to lazy views loaded at runtime */
 export type ImportMap = Record<
@@ -52,18 +52,47 @@ export async function generateAdminMetadata({
 
 // ----------------------- helpers (exported for testing/override) -----------------------
 
-export function parseSegments(paths: string[]) {
-  const [a, b, c] = paths ?? [];
+const TOP_LEVEL_ROUTES = new Set([
+  'login',
+  'forgot',
+  'reset',
+  'logout',
+  'unauthorized',
+]);
+
+export function parseSegments(segments: string[]) {
+  const [a, b, c] = segments ?? [];
+
+  // Top-level admin routes: /admin/login, /admin/forgot, ...
+  if (a && !b && TOP_LEVEL_ROUTES.has(a)) {
+    return {
+      collection: '',
+      action: a as string,
+      id: undefined as string | undefined,
+    };
+  }
+
+  // /admin                  -> dashboard
+  // /admin/:collection      -> list
+  // /admin/:collection/:action -> action
   const collection = a ?? '';
   const action = b ?? (collection ? 'list' : 'home');
-  const id = c; // keep if you plan to support /:collection/:action/:id later
+  const id = c;
   return { collection, action, id };
 }
 
-export function resolveRouteKey(paths: string[]) {
-  const { collection, action } = parseSegments(paths);
+export function resolveRouteKey(segments: string[]) {
+  const { collection, action } = parseSegments(segments);
+
+  // Top-level routes become 'route:/<action>'
+  if (!collection && action && TOP_LEVEL_ROUTES.has(action)) {
+    return `route:/${action}`;
+  }
+
   if (!collection) return 'route:/dashboard';
   if (action === 'list') return 'route:/:collection/list';
+
+  // Contract: /admin/:collection/:action
   return 'route:/:collection/:action';
 }
 

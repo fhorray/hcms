@@ -230,4 +230,7 @@ export type OpacaBuiltConfig = Omit<OpacaConfig, "collections"> & {
       has: (n: string) => boolean;
     } | undefined;
   }
+
+  // method to return only client data
+  getClientConfig: () => Omit<OpacaBuiltConfig, '_registries' | 'database' | 'auth' | 'runtime'>;
 };
