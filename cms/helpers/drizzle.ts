@@ -37,7 +37,6 @@ export type Dialect = "pg" | "sqlite";
 // ---- Public API ------------------------------------------------------------
 export function buildDrizzleTable(
   collection: OpacaCollection,
-  dialect?: Dialect
 ) {
   return process.env.OPACA_DB_DIALECT === "d1" || process.env.OPACA_DB_DIALECT === "sqlite"
     ? buildSqliteTable(collection)
@@ -293,23 +292,3 @@ function pluralize(s: string): string {
   return `${n}s`;
 }
 
-// ----------------------------------------------------------------------------
-// EXAMPLE
-// ----------------------------------------------------------------------------
-// const posts = buildDrizzleTable(
-//   {
-//     name: "Post",
-//     fields: {
-//       title: { type: "text", required: true, indexed: true },
-//       body: "rich-text",
-//       published: { type: "checkbox", default: false, indexed: true },
-//       createdAt: { type: "date", default: "now" },
-//       authorId: { type: { relationship: { to: "users" } }, indexed: true },
-//       tags: "array",
-//       kind: { type: { enum: ["draft", "post", "note"] }, default: "draft" },
-//     },
-//   },
-//   "pg"
-// );
-//
-// export { posts };

@@ -1,17 +1,15 @@
-import { OpacaCollection } from "@/cms/types";
-import { ShoppingCartIcon } from "lucide-react";
+import { OpacaCollection } from "@opaca/types/config";
 
 export const Products: OpacaCollection = {
   name: "Products",
   slug: "products",
   icon: "ShoppingCartIcon",
-  fields: {
-    title: { type: "textarea", required: true, indexed: true },
-    price: { type: "number", required: true, indexed: true },
-    inStock: { type: "switcher", default: true, indexed: true },
-    tags: { type: "json" },
-    description: { type: "rich-text" },
-    releaseDate: { type: "date" },
-
-  }
-}
+  fields: [
+    { name: "title", type: "textarea", required: true, indexed: true },
+    { name: "price", type: "number", required: true, indexed: true },
+    { name: "inStock", type: "switcher", default: true, indexed: true },
+    { name: "tags", type: "json" },
+    { name: "description", type: "rich-text" },
+    { name: "releaseDate", type: "date" },
+  ],
+};

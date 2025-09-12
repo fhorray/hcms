@@ -1,11 +1,13 @@
-import { handle } from 'hono/vercel';
+import config from "@opaca-config";
+import { buildOpacaApi } from "@/opaca/server/api";
+import { Hono } from "hono";
+import { handle } from "hono/vercel";
+import { OpacaDbAdapter } from "@/opaca/db/adapter";
 
-// app/api/route.ts
-import api from '@/cms/server';
+const app = new Hono();
+app.route("/", buildOpacaApi(config.database?.adapter as OpacaDbAdapter));
 
-export const GET = handle(api);
-export const POST = handle(api);
-export const PUT = handle(api);
-export const DELETE = handle(api);
-export const PATCH = handle(api);
-export const OPTIONS = handle(api);
+export const GET = handle(app);
+export const POST = handle(app);
+export const PUT = handle(app);
+export const DELETE = handle(app);

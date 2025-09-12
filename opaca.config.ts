@@ -1,31 +1,21 @@
-import collections from "@/collections";
-import { buildOpacaConfig } from "./cms/config";
 
-export default buildOpacaConfig({
+import { D1Adapter } from "@/opaca/db/adapters/d1";
+import { defineOpacaConfig } from "@opaca/config";
+import collections from "./collections";
+
+export default defineOpacaConfig({
   collections,
-  admin: {
-    appName: "Opaca CMS",
-    appDescription: "A Headless CMS, Simple & Opacaful! 🚀",
-    avatar: 'dicebar',
-    dateFormat: 'dd/MM/yyyy',
-    theme: "dark",
-    suppressHydrationWarning: true,
+  database: {
+    dialect: "d1",
+    adapter: D1Adapter({
+      devMode: process.env.NODE_ENV === "development",
+    }),
   },
-  auth: {
-    baseURL: process.env.OPACA_BASE_URL || "http://localhost:3000",
-    emailAndPassword: {
-      enabled: true
-    },
-    socialProviders: {
-      // google: {
-      //   clientId: process.env.GOOGLE_CLIENT_ID as string,
-      //   clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-      // }
-    },
-    plugins: [
-      // TODO pass plugins as object with booleans instead of array
-      // admin(),
-      // nextCookies()
-    ]
+  admin: {
+    appName: "My Opaca CMS",
+    appDescription: "An example Opaca CMS project",
+    appLang: "en",
+    avatar: "gravatar",
+    dateFormat: "DD/MM/YYYY",
   }
-})
+});

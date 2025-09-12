@@ -8,4 +8,4 @@ export default [
   Products,
   Users,
   Properties
-]
+];

@@ -1,59 +1,86 @@
-import { OpacaCollection } from "@/cms/types";
+import { OpacaCollection } from "@opaca/types/config";
 
 export const Users: OpacaCollection = {
   name: "Users",
-  slug: "users",
-  icon: "User", // matches a valid Lucide icon name
-  primaryKey: "id",
-  fields: {
-    id: {
+  icon: "UserIcon",
+  fields: [
+    {
+      type: {
+        row: [
+          {
+            name: "name",
+            type: "text",
+            required: true,
+            layout: {
+              col: 6
+            }
+          },
+          {
+            name: "email",
+            type: "email",
+            required: true,
+            unique: true,
+            indexed: true,
+          },
+        ]
+      }
+    },
+    {
+      name: "id",
       type: "text",
       required: true,
       unique: true,
+      hidden: true,
     },
-    name: {
-      type: "text",
-      required: true,
-    },
-    email: {
-      type: "email",
-      required: true,
-      unique: true,
-      indexed: true,
-    },
-    emailVerified: {
+    {
+      name: "emailVerified",
       type: "checkbox", // boolean flag
       default: false,
       required: true,
-      columnName: "email_verified",
     },
-    image: {
+    {
+      name: "image",
       type: "text",
     },
-    createdAt: {
+    {
+      name: "createdAt",
       type: "date",
       required: true,
-      columnName: "created_at",
+      hidden: true,
     },
-    updatedAt: {
+    {
+      name: "updatedAt",
       type: "date",
       required: true,
-      columnName: "updated_at",
+      hidden: true,
     },
-    role: {
-      type: "text",
+    {
+      name: "role",
+      type: {
+        select: {
+          options: [
+            { label: "Admin", value: "admin" },
+            { label: "Editor", value: "editor" },
+            { label: "Viewer", value: "viewer" },
+            { label: "Guest", value: "guest" },
+          ],
+          multiple: false,
+          relationship: { to: "properties", valueField: "name" },
+        },
+      },
     },
-    banned: {
+    {
+      name: "banned",
       type: "checkbox",
       default: false,
     },
-    banReason: {
-      type: "text",
-      columnName: "ban_reason",
+    {
+      name: "banReason",
+      type: "textarea",
     },
-    banExpires: {
+    {
+      name: "banExpires",
       type: "date",
-      columnName: "ban_expires",
     },
-  },
+  ],
 };

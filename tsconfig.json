@@ -23,9 +23,7 @@
       "@opaca-config": [
         "./opaca.config.ts"
       ],
-      "@opacacms": [
-        "./cms/*"
-      ],
+      "@opaca/*": ["./opaca/*"]
     },
     "types": [
         "./cloudflare-env.d.ts",
