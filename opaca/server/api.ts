@@ -11,8 +11,14 @@ import { buildSDL } from "./graphql/helpers";
 import { makeRoot } from "./make-root";
 import { mountPluginsRest } from "./mount-plugins";
 import { mountRest } from "./mount-rest";
+import { OpacaPluginManifest } from "../plugins/plugin-api/types";
 
-export function buildOpacaApi(adapter: OpacaDbAdapter) {
+
+export type OpacaApiOptions = {
+  plugins?: OpacaPluginManifest[];
+}
+
+export function buildOpacaApi(adapter: OpacaDbAdapter, opts: OpacaApiOptions = {}) {
   const api = new Hono<{
     Variables: Variables
   }>().basePath("/api");

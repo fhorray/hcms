@@ -1,5 +1,5 @@
 import { satisfies } from "semver"; // keep it small; or write your own check
-import { OpacaPluginContext, OpacaPluginManifest } from "@opaca/plugin-api/types";
+import { OpacaPluginContext, OpacaPluginManifest } from "@opaca/plugins/plugin-api/types";
 
 type LoadPluginOpts = {
   pluginSpecs: OpacaPluginManifest[]; // e.g. ["@acme/opaca-plugin-d1", "./plugins/local-foo"]

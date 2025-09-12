@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import '../globals.css';
-import * as config from '@opaca-config';
+import config from '@opaca-config';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: config.admin.appName,
-  description: config.admin.appDescription,
+  title: config.admin?.appName,
+  description: config.admin?.appDescription,
 };
 
 export default function RootLayout({
@@ -25,8 +25,8 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang={config.admin.appLang}
-      suppressHydrationWarning={config.admin.suppressHydrationWarning}
+      lang={config.admin?.appLang}
+      suppressHydrationWarning={config.admin?.suppressHydrationWarning}
     >
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

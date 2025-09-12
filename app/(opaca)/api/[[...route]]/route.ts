@@ -3,6 +3,8 @@ import { buildOpacaApi } from "@/opaca/server/api";
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
 import { OpacaDbAdapter } from "@/opaca/db/types";
+import OpacaAuthPlugin from "@/opaca/plugins/opaca-auth";
+import { auth } from "@/lib/auth";
 
 const app = new Hono();
 app.route("/", buildOpacaApi(config.database?.adapter as OpacaDbAdapter));

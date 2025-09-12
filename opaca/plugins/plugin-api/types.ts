@@ -1,5 +1,5 @@
 import { Context } from "hono";
-import { Variables } from "../types/hono";
+import { Variables } from "@opaca/types/hono";
 
 export type SemverRange = string;
 
@@ -54,16 +54,16 @@ export interface OpacaFieldDescriptor {
 }
 
 export interface OpacaRouteDescriptor {
-  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "ALL";
   path: string;
   handler: (c: Context<{
     Variables: Variables
-  }>) => Response | Promise<Response>;
+  }> | Request) => Response | Promise<Response>;
 }
 
 export interface OpacaActionDescriptor {
   name: string;
-  run: (input: unknown) => Promise<unknown>;
+  run: (input: any | unknown) => Promise<any | unknown>;
 }
 
 export interface OpacaUIPanelDescriptor {

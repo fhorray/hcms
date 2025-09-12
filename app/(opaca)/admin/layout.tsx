@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 
 import { SidebarProvider } from '@/components/ui/sidebar';
@@ -11,6 +9,12 @@ interface CMSLayoutProps {
 }
 
 export default function CMSLayout({ children }: CMSLayoutProps) {
+  const auth = false;
+
+  if (!auth) {
+    return children;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <SidebarProvider defaultOpen>

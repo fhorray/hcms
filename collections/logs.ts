@@ -25,4 +25,4 @@ export const Logs: OpacaCollection = {
       indexed: true,
     },
   ]
-}
+};

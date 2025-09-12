@@ -1,8 +1,8 @@
 import { OpacaBuiltConfig, OpacaConfig } from "@opaca/types/config";
-import { OpacaActionDescriptor, OpacaDbAdapterDescriptor, OpacaFieldDescriptor, OpacaInternalRegistriesStore, OpacaRouteDescriptor, OpacaTransformerDescriptor, OpacaUIPanelDescriptor } from "../plugin-api/types";
+import { OpacaActionDescriptor, OpacaDbAdapterDescriptor, OpacaFieldDescriptor, OpacaInternalRegistriesStore, OpacaRouteDescriptor, OpacaTransformerDescriptor, OpacaUIPanelDescriptor } from "@opaca/plugins/plugin-api/types";
 import { loadPlugins } from "./plugins-loader";
 import { sanitize } from "./sanitize";
-import { createPluginContext } from "../plugin-api/create-plugin-context";
+import { createPluginContext } from "@opaca/plugins/plugin-api/create-plugin-context";
 
 
 export function defineOpacaConfig(cfg: OpacaConfig): OpacaBuiltConfig {
