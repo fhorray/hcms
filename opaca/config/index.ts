@@ -46,11 +46,11 @@ export function defineOpacaConfig(cfg: OpacaConfig): OpacaBuiltConfig {
 
   return {
     ...sanitized,
-    plugins,
+    // plugins,
     // Optional: expose runtime registries to your app
-    runtime: {
-      fields: runtime.fields,
-    },
+    // runtime: {
+    //   fields: runtime.fields,
+    // },
   };
 }
 

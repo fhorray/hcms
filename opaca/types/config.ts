@@ -103,6 +103,8 @@ export type OpacaConfig = {
   database?: {
     dialect: string;
     adapter: OpacaDbAdapter;
+    migrationsDir?: string;
+    schemaDir?: string;
   }
   admin?: {
     appName?: string;

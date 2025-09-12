@@ -1,11 +1,11 @@
-import config from "@opaca-config";
+import * as config from "@opaca-config";
 import { buildOpacaApi } from "@/opaca/server/api";
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
 import { OpacaDbAdapter } from "@/opaca/db/types";
 
 const app = new Hono();
-app.route("/", buildOpacaApi(config.database?.adapter as OpacaDbAdapter));
+app.route("/", buildOpacaApi(config.serverConfig.database?.adapter as OpacaDbAdapter));
 
 export const GET = handle(app);
 export const POST = handle(app);

@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Save, XIcon } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { DynamicField } from '../components';
+import { slugify } from '@/lib/utils';
 
 export default function CollectionForm() {
   const router = useRouter();
@@ -81,7 +82,7 @@ export default function CollectionForm() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => router.push(`/admin/${current.slug}`)}
+              onClick={() => router.push(`/admin/${slugify(current.name)}`)}
             >
               <ArrowLeft className="w-4 h-4" />
             </Button>
@@ -128,7 +129,7 @@ export default function CollectionForm() {
                 type="button"
                 variant="outline"
                 className="cursor-pointer"
-                onClick={() => router.push(`/admin/${current.slug}`)}
+                onClick={() => router.push(`/admin/${slugify(current.name)}`)}
               >
                 <XIcon className="w-4 h-4 mr-2" />
                 Cancel

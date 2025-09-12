@@ -1,4 +1,3 @@
-
 import { slugify } from "@/lib/utils";
 import config from "@/opaca.config";
 import type { OpacaDbAdapter } from "@/opaca/db/types";

@@ -1,4 +1,3 @@
-
 import { D1Adapter } from "@/opaca/db/adapters/d1";
 import { defineOpacaConfig } from "@opaca/config";
 import collections from "./collections";
@@ -37,12 +36,8 @@ const LocalRoutes = (opts: { basePath?: string } = {}): OpacaPluginManifest => {
       ctx.registries.routes.register({
         method: "GET",
         path: `${base}/health`,
-        handler: (_req: Request) => {
-          // Your RouteDescriptor expects (req: Request) => Response
-          return new Response(
-            JSON.stringify({ status: "ok", message: "Hello from local plugin route!" }),
-            { headers: { "content-type": "application/json" } }
-          );
+        handler: (c) => {
+          return c.json({ status: "ok", timestamp: Date.now() })
         },
       });
     },
@@ -50,7 +45,7 @@ const LocalRoutes = (opts: { basePath?: string } = {}): OpacaPluginManifest => {
 };
 
 
-export default defineOpacaConfig({
+export const serverConfig = defineOpacaConfig({
   collections,
   database: {
     dialect: "d1",
@@ -65,10 +60,16 @@ export default defineOpacaConfig({
     avatar: "dicebar",
     dateFormat: "DD/MM/YYYY",
   },
-  plugins: [
-    LocalRoutes()
-  ]
+  // plugins: [
+  //   LocalRoutes()
+  // ]
 });
+
+export const clientConfig = {
+  collections: serverConfig.collections,
+  admin: serverConfig.admin,
+  _index: serverConfig._index,
+};
 
 
 

@@ -1,9 +1,9 @@
-import { BuiltOpacaConfig } from '@opaca/types';
+import { OpacaBuiltConfig } from '@opaca/types/config';
 import type { ReactNode } from 'react';
 import OpacaProvider from '../providers';
 
 type Props = {
-  config: BuiltOpacaConfig;
+  config: OpacaBuiltConfig;
   children: ReactNode;
 };
 

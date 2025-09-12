@@ -1,7 +1,8 @@
-import { OpacaCollection, OpacaConfig } from '@opaca/types';
+import { OpacaCollection, OpacaConfig } from '@opaca/types/config';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Database, FileText, Settings, TrendingUp } from 'lucide-react';
 import CollectionCard from '../components/ui/collection-card';
+import { slugify } from '@/lib/utils';
 
 type Props = {
   config: OpacaConfig;
@@ -94,7 +95,10 @@ export default function Dashboard({ config }: Props) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {collections.map((collection) => (
-            <CollectionCard key={collection.slug} collection={collection} />
+            <CollectionCard
+              key={slugify(collection.name)}
+              collection={collection}
+            />
           ))}
         </div>
       </div>

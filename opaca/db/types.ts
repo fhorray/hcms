@@ -1,3 +1,5 @@
+"use server"
+
 import type { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import type { PgDatabase } from "drizzle-orm/pg-core";
 import type { DrizzleD1Database } from "drizzle-orm/d1";

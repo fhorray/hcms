@@ -2,7 +2,7 @@
 
 import { slugify } from '@/lib/utils';
 import { OpacaCollection } from '@/opaca/types/config';
-import config from '@opaca-config';
+import * as config from '@opaca-config';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 
@@ -14,7 +14,7 @@ export const useOpaca = () => {
   const action = paths?.[1]; // present for "/:collection/:id"
 
   const collection = {
-    ...Object.values(config.collections).find(
+    ...Object.values(config.clientConfig.collections).find(
       (c) =>
         c.slug === collectionSlug ||
         c.name.toLowerCase() === collectionSlug?.toLowerCase(),
@@ -126,8 +126,8 @@ export const useOpaca = () => {
     isEditing,
     itemId,
     stats: {
-      totalCollections: Object.values(config.collections).length,
-      totalFields: Object.values(config.collections).reduce(
+      totalCollections: Object.values(config.clientConfig.collections).length,
+      totalFields: Object.values(config.clientConfig.collections).reduce(
         (acc, collection) => acc + Object.keys(collection.fields).length,
         0,
       ),
@@ -140,8 +140,8 @@ export const useOpaca = () => {
       },
     },
     api,
-    admin: config.admin,
-    index: config._index,
-    database: config.database,
+    admin: config.clientConfig.admin,
+    index: config.clientConfig._index,
+    // database: config.clientConfig.database,
   };
 };

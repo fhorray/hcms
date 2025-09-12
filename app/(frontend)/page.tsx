@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { DatabaseIcon, FileTextIcon } from 'lucide-react';
-import config from '@opaca-config';
+import * as config from '@opaca-config';
 
 export default function Home() {
   return (

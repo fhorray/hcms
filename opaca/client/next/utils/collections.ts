@@ -1,4 +1,4 @@
-import { LucideIconName } from '@opaca/types';
+import { LucideIconName } from '@opaca/types/config';
 import * as Lucide from 'lucide-react';
 
 export function getIconByPascal(name?: LucideIconName) {

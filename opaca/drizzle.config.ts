@@ -4,13 +4,21 @@ dotenv.config({
   path: ".dev.vars"
 });
 
+import * as config from "@opaca-config"
+
+if (!process.env.OPACA_DB_DIALECT) {
+  throw new Error("Missing OPACA_DB_DIALECT env var");
+}
+
+const dialect = process.env.OPACA_DB_DIALECT || config.serverConfig.database?.dialect;
+
 export default
 
   // d1 config
-  process.env.OPACA_DB_DIALECT === "d1" ?
+  dialect === "d1" ?
     defineConfig({
-      schema: "schema.ts",
-      out: "./migrations",
+      schema: config.serverConfig.database?.schemaDir ?? "schema.ts",
+      out: config.serverConfig.database?.migrationsDir ?? "./migrations",
       dialect: "sqlite",
       driver: "d1-http",
       dbCredentials: {
@@ -22,7 +30,7 @@ export default
     }) :
 
     // sqlite config
-    process.env.OPACA_DB_DIALECT === "sqlite" ?
+    dialect === "sqlite" ?
       defineConfig({
         schema: "schema.ts",
         out: "./migrations",

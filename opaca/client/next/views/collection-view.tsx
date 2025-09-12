@@ -13,7 +13,7 @@ import { ArrowLeft, Database, Link } from 'lucide-react';
 import { useOpaca } from '@opaca/client/hooks';
 
 import { useParams } from 'next/navigation';
-import { OpacaCollection } from '@opaca/types';
+import { OpacaCollection } from '@opaca/types/config';
 import CollectionHeader from '../components/ui/collection-header';
 import CollectionItemsList from '../components/ui/collection-items-list';
 import { useRouter } from 'next/router';
@@ -83,9 +83,7 @@ export default function CollectionPage() {
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Primary Key
             </CardTitle>
-            <div className="text-2xl font-bold">
-              {current.primaryKey || 'id'}
-            </div>
+            <div className="text-2xl font-bold">{'id'}</div>
           </CardHeader>
         </Card>
       </div>
