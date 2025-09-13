@@ -8,6 +8,7 @@ export function mountPluginsRest(app: Hono<{
 
   // TODO: security checks, e.g. only allow certain basePaths, etc.
   for (const route of config._registries.routes) {
+    console.log(route.hanfler)
     app.on(route.method, route.path, async (c, next) => {
 
       return await route.handler(c, next);

@@ -1,83 +1,39 @@
-import { D1Adapter } from "@/opaca/db/adapters/d1";
-import { defineOpacaConfig } from "@opaca/config";
+// opaca.config.ts (server-only module that builds and exports the config)
+// Comments in English only.
+
 import collections from "./collections";
-import { OpacaPluginManifest } from "@opaca/plugins/plugin-api/types";
-import { OpacaBuiltConfig } from "@opaca/types/config";
-import OpacaAuthPlugin from "./opaca/plugins/opaca-auth";
-import { auth } from "./lib/auth";
+import { defineOpacaConfig } from "./opaca/config";
+import { D1Adapter } from "./opaca/db/adapters/d1";
+import { AuthPlugin, AuthRoutesPlugin } from "./opaca/plugins/opaca-auth";
 
+// Example plugins
 
-// PLUGIN EXAMPLE
-// const LocalRoutes = (opts: { basePath?: string } = {}): OpacaPluginManifest => {
-//   const base = opts.basePath ?? "/plugins/local";
-
-//   // IMPORTANT: match this to your ctx.version (e.g., "0.1.0")
-//   return {
-//     meta: {
-//       name: "local-routes",
-//       version: "0.0.1",
-//       engines: { opaca: "^0.1.0" },
-//       description: "Example local plugin that registers a field and a GET route.",
-//     },
-
-//     // Optional, only for introspection/docs
-//     capabilities: [
-//       { type: "field", name: "example" },
-//       { type: "route", methods: ["GET"], basePath: base },
-//     ],
-
-//     // Sync-only hooks for your strict sync loader
-//     setup(ctx) {
-//       // ctx.registries.fields.register({
-//       //   name: "example",
-//       //   schema: { kind: "string" },
-//       //   renderAdmin: ExampleField,
-//       //   sanitize: (v) => (v == null ? "" : String(v)),
-//       // });
-
-//       // --- Register a GET route under the plugin base path ---
-//       ctx.registries.routes.register({
-//         method: "GET",
-//         path: `${base}/health`,
-//         handler: (c) => {
-//           return c.json({ status: "ok", timestamp: Date.now() })
-//         },
-//       });
-//     },
-//   };
-// };
-
-const serverConfig = defineOpacaConfig({
+const serverConfig = await defineOpacaConfig({
   collections,
   database: {
     dialect: "d1",
-    adapter: D1Adapter({
-      devMode: process.env.NODE_ENV === "development",
-    }),
+    adapter: D1Adapter({ devMode: process.env.NODE_ENV !== "production" }),
   },
   admin: {
     appName: "Opaca CMS",
-    appDescription: "An example Opaca CMS project",
+    appDescription: "Example",
     appLang: "en",
     avatar: "dicebar",
     dateFormat: "DD/MM/YYYY",
   },
   plugins: [
-    OpacaAuthPlugin({
-      jwtSecret: "process.env.AUTH_JWT_SECRET",
-      adminBasic: { username: "admin@email.com", password: "secret" },
-      bearerApiToken: "process.env.API_TOKEN",
-    })
-  ]
+    // LocalRoutesPlugin({ basePath: "/api/local" }),
+    AuthPlugin,
+    AuthRoutesPlugin,
+  ],
 });
 
-export const client = {
+// Default export: full server config (do NOT import this on the client)
+export default serverConfig;
+
+// Client-safe subset: no database/auth/registries/runtime internals
+export const client: Pick<typeof serverConfig, "collections" | "admin" | "_index"> = {
   collections: serverConfig.collections,
   admin: serverConfig.admin,
   _index: serverConfig._index,
-} as OpacaBuiltConfig
-
-
-export default serverConfig;
-
-
+};

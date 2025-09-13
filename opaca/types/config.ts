@@ -6,7 +6,7 @@ import { OpacaDbAdapter } from "@opaca/db/types";
 
 // TODO: fix this import, to avoid circular dependency & dinamically import it somwhow
 import type * as TSchema from "@/schema";
-import { OpacaPluginManifest } from '@opaca/plugins/plugin-api/types';
+import { PluginManifest } from '@opaca/plugins/plugin-api/types';
 
 // List of lucide icon component names
 export type LucideIconName = {
@@ -150,7 +150,7 @@ export type OpacaConfig = {
 
     }
   };
-  plugins?: OpacaPluginManifest[]
+  plugins?: PluginManifest[]
 };
 
 
@@ -213,7 +213,7 @@ export type OpacaBuiltConfig = Omit<OpacaConfig, "collections"> & {
     >;
   };
 
-  plugins: (OpacaPluginManifest | string)[];
+  plugins: (PluginManifest | string)[];
   _registries: {
     db: any[];
     fields: any[];

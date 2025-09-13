@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSessionCookie } from "./opaca/plugins/opaca-auth/helpers";
 
 const ADMIN_ROOT = "/admin";
 const PUBLIC_AUTH_ROUTES = ["/admin/login", "/admin/register"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const sessionCookie = getSessionCookie(request, {
-    cookieName: "opaca_token",
-  });
+  const sessionCookie = true;
 
 
   // console.log({ sessionCookie })

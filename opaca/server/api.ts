@@ -1,6 +1,6 @@
 
-import config from "@/opaca.config";
 import { slugify } from "@/lib/utils";
+import config from "@/opaca.config";
 import type { OpacaDbAdapter } from "@/opaca/db/types";
 import { graphqlServer } from "@hono/graphql-server";
 import { buildSchema } from "graphql";
@@ -11,14 +11,8 @@ import { buildSDL } from "./graphql/helpers";
 import { makeRoot } from "./graphql/make-root";
 import { mountPluginsRest } from "./mount-plugins";
 import { mountRest } from "./mount-rest";
-import { OpacaPluginManifest } from "../plugins/plugin-api/types";
 
-
-export type OpacaApiOptions = {
-  plugins?: OpacaPluginManifest[];
-}
-
-export function buildOpacaApi(adapter: OpacaDbAdapter, opts: OpacaApiOptions = {}) {
+export function buildOpacaApi(adapter: OpacaDbAdapter) {
   const api = new Hono<{
     Variables: Variables
   }>().basePath("/api");
