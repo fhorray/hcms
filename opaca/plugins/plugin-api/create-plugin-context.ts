@@ -140,7 +140,9 @@ export function createPluginContext(params: {
       ui: uiRegistry,
       pipeline: pipelineRegistry,
     },
-    resources: {},
+    resources: {
+      db: dbRegistry
+    },
   };
 
   // Optionally expose read-only handles to your runtime (admin/server)

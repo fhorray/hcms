@@ -8,7 +8,7 @@ import { Hono } from "hono";
 import { makeRepo } from "../services/make-repo";
 import { Variables } from "../types/hono";
 import { buildSDL } from "./graphql/helpers";
-import { makeRoot } from "./make-root";
+import { makeRoot } from "./graphql/make-root";
 import { mountPluginsRest } from "./mount-plugins";
 import { mountRest } from "./mount-rest";
 import { OpacaPluginManifest } from "../plugins/plugin-api/types";

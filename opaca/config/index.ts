@@ -3,6 +3,7 @@ import { OpacaActionDescriptor, OpacaDbAdapterDescriptor, OpacaFieldDescriptor, 
 import { loadPlugins } from "./plugins-loader";
 import { sanitize } from "./sanitize";
 import { createPluginContext } from "@opaca/plugins/plugin-api/create-plugin-context";
+import { OpacaDbAdapter } from "../db/types";
 
 
 export function defineOpacaConfig(cfg: OpacaConfig): OpacaBuiltConfig {
@@ -46,13 +47,15 @@ export function defineOpacaConfig(cfg: OpacaConfig): OpacaBuiltConfig {
 
   return {
     ...sanitized,
-    // plugins,
+    plugins,
     // Optional: expose runtime registries to your app
-    // runtime: {
-    //   fields: runtime.fields,
-    // },
+    runtime: {
+      fields: runtime.fields,
+    },
   };
 }
+
+// graphql api
 
 
 function createRuntimeFields(fields: {

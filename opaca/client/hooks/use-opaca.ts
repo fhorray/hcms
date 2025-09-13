@@ -27,6 +27,7 @@ export const useOpaca = () => {
   const isEditing = action !== 'create';
   const itemId = isEditing ? action : null;
 
+  // Create Api for the server
   const api = {
     // GET ALL ITEMS
     list: useQuery({
@@ -129,6 +130,38 @@ export const useOpaca = () => {
     }),
   };
 
+  // Auth Logic
+  const auth = {
+    login: useMutation({
+      mutationFn: async (data: { email: string; password: string }) => {
+        const res = await fetch(`/api/plugins/opaca-auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        const resData = await res.json() as OpacaApiResponse<{ token: string }>
+        return resData;
+      },
+    }),
+    me: useQuery({
+      queryKey: ['opaca', 'me'],
+      queryFn: async () => {
+        const res = await fetch(`/api/plugins/opaca-auth/me`);
+        const data = await res.json();
+        return data;
+      },
+    }),
+    logout: useMutation({
+      mutationFn: async () => {
+        const res = await fetch(`/api/auth/logout`, {
+          method: 'POST',
+        });
+        const data = await res.json();
+        return data;
+      },
+    })
+  }
+
   return {
     isEditing,
     itemId,
@@ -149,6 +182,7 @@ export const useOpaca = () => {
     api,
     admin: client.admin,
     index: client._index,
-    // database: client.database,
+    database: client.database,
+    auth
   };
 };

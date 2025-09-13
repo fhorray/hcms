@@ -1,4 +1,4 @@
-import { Context } from "hono";
+import { Context, Next } from "hono";
 import { Variables } from "@opaca/types/hono";
 
 export type SemverRange = string;
@@ -57,8 +57,8 @@ export interface OpacaRouteDescriptor {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "ALL";
   path: string;
   handler: (c: Context<{
-    Variables: Variables
-  }> | Request) => Response | Promise<Response>;
+    Variables: Variables;
+  }>, next: Next) => Response | Promise<void | Response>;
 }
 
 export interface OpacaActionDescriptor {

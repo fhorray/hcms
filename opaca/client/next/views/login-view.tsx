@@ -9,17 +9,7 @@ import { useParams, useRouter } from 'next/navigation';
 
 export default function LoginView() {
   const router = useRouter();
-  // const { auth } = useOpaca();
-
-  // TODO ADD REAL AUTH
-  const auth = {
-    signIn: {
-      email: (value: any, options: any) => {
-        console.log('Simulating sign in with', value);
-        options.onSuccess();
-      },
-    },
-  };
+  const { auth } = useOpaca();
 
   type FormData = {
     email: string;
@@ -31,7 +21,7 @@ export default function LoginView() {
   const form = useAppForm({
     defaultValues: { email: '', password: '', remember: false },
     onSubmit: async ({ value }) => {
-      auth.signIn.email(value, {
+      auth.login.mutate(value, {
         onSuccess: () => router.push('/admin'),
       });
     },

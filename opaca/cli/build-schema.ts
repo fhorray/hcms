@@ -41,7 +41,7 @@ export async function main() {
 
   for (const col of Object.values(config.collections)) {
     lines.push(
-      `export const ${col.slug} = buildDrizzleTable(config.collections["${col.slug}"], "${dialect}");`
+      `export const ${col.slug} = buildDrizzleTable(client.collections["${col.slug}"], "${dialect}");`
     );
   }
 

@@ -1,17 +1,21 @@
+'use client';
+
 import React from 'react';
 
 import { SidebarProvider } from '@/components/ui/sidebar';
 import AdminSidebar from '@opaca/client/next/components/ui/admin-sidebar';
 import AdminHeader from '@opaca/client/next/components/ui/admin-header';
+import { useOpaca } from '@/opaca/client/hooks';
 
 interface CMSLayoutProps {
   children: React.ReactNode;
 }
 
 export default function CMSLayout({ children }: CMSLayoutProps) {
-  const auth = false;
+  const { auth } = useOpaca();
 
-  if (!auth) {
+  console.log(auth.me.data);
+  if (!auth.me.data) {
     return children;
   }
 

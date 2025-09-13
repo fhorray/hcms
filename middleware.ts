@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSessionCookie } from "better-auth/cookies";
+import { getSessionCookie } from "./opaca/plugins/opaca-auth/helpers";
 
 const ADMIN_ROOT = "/admin";
 const PUBLIC_AUTH_ROUTES = ["/admin/login", "/admin/register"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const sessionCookie = getSessionCookie(request);
+  const sessionCookie = getSessionCookie(request, {
+    cookieName: "opaca_token",
+  });
+
+
+  // console.log({ sessionCookie })
 
   const isAdminRoute = pathname === ADMIN_ROOT || pathname.startsWith(ADMIN_ROOT + "/");
   const isAuthPublic = PUBLIC_AUTH_ROUTES.includes(pathname);

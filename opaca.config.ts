@@ -64,9 +64,9 @@ const serverConfig = defineOpacaConfig({
   },
   plugins: [
     OpacaAuthPlugin({
-      provider: "better-auth",
-      instance: auth,
-      basePath: "/api/auth",
+      jwtSecret: "process.env.AUTH_JWT_SECRET",
+      adminBasic: { username: "admin@email.com", password: "secret" },
+      bearerApiToken: "process.env.API_TOKEN",
     })
   ]
 });

@@ -1,18 +1,23 @@
-export type OpacaBetterAuthServerLike = {
-  handler: (req: Request) => Response | Promise<Response>;
-  api: {
-    getSession: (args: {
-      headers: Headers;
-      query?: Record<string, any>;
-    }) => Promise<{ user: unknown; session: unknown } | null>;
+
+// Types for plugin options
+export type OpacaAuthOptions = {
+  basePath?: string;                // Base path for plugin routes
+  jwtSecret: string;                // Secret for signing/verifying JWT
+  jwtExpiresIn?: number;            // Seconds (default: 60 * 60 * 24)
+  cookieName?: string;              // Cookie name (default: "opaca_token")
+  cookieDomain?: string;            // Optional cookie domain
+  cookieSecure?: boolean;           // Force Secure cookie (defaults to true in production)
+  adminBasic?: {                    // Optional Basic Auth to guard admin
+    username: string;
+    password: string;
+    realm?: string;
   };
-  // Correct name:
-  utils: {
-    ready: () => Promise<void>;
-  };
-  // Backward-compat if your local type had a typo:
-  // Remove this block after you fix your local type.
-  utilsts?: {
-    ready: () => Promise<void>;
-  };
+  bearerApiToken?: string;          // Optional static API token for machine-to-machine
+};
+
+export type JwtPayload = {
+  sub: string;                      // User id
+  email?: string;
+  roles?: string[];
+  exp?: number;
 };

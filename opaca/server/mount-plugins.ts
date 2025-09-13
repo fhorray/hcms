@@ -8,9 +8,9 @@ export function mountPluginsRest(app: Hono<{
 
   // TODO: security checks, e.g. only allow certain basePaths, etc.
   for (const route of config._registries.routes) {
-    app.on(route.method, route.path, async (c) => {
+    app.on(route.method, route.path, async (c, next) => {
 
-      return await route.handler(c);
+      return await route.handler(c, next);
     })
   }
 }
